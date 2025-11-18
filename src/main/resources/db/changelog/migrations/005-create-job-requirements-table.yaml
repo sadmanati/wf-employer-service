@@ -1,0 +1,106 @@
+databaseChangeLog:
+  - changeSet:
+      id: 005-create-job-requirements-table
+      author: wf-system
+      changes:
+        - createTable:
+            tableName: job_requirements
+            remarks: Skills, languages, and certification requirements for job orders
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_job_requirements
+                  defaultValueComputed: gen_random_uuid()
+
+              - column:
+                  name: job_order_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: requirement_type
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+                  remarks: Enum - mandatory, preferred
+
+              - column:
+                  name: category
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+                  remarks: skill, language, certification, education, experience
+
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: level
+                  type: varchar(50)
+                  constraints:
+                    nullable: true
+                  remarks: Beginner, Intermediate, Advanced, Expert, etc.
+
+              - column:
+                  name: min_years_experience
+                  type: integer
+                  constraints:
+                    nullable: true
+                  defaultValue: 0
+
+              - column:
+                  name: weightage
+                  type: decimal(5,2)
+                  constraints:
+                    nullable: true
+                  remarks: Weightage for matching algorithm (0.0 to 1.0)
+
+              - column:
+                  name: metadata
+                  type: jsonb
+                  constraints:
+                    nullable: true
+                  remarks: Additional requirement-specific data
+
+              - column:
+                  name: created_at
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: false
+                  defaultValueComputed: current_timestamp
+
+        - addForeignKeyConstraint:
+            baseTableName: job_requirements
+            baseColumnNames: job_order_id
+            referencedTableName: job_orders
+            referencedColumnNames: id
+            constraintName: fk_job_requirements_job_order
+            onDelete: CASCADE
+
+        - addCheckConstraint:
+            tableName: job_requirements
+            constraintName: chk_job_requirements_type
+            checkCondition: "requirement_type IN ('mandatory', 'preferred')"
+
+        - addCheckConstraint:
+            tableName: job_requirements
+            constraintName: chk_job_requirements_category
+            checkCondition: "category IN ('skill', 'language', 'certification', 'education', 'experience')"
+
+        - addCheckConstraint:
+            tableName: job_requirements
+            constraintName: chk_job_requirements_years_non_negative
+            checkCondition: "min_years_experience >= 0"
+
+        - addCheckConstraint:
+            tableName: job_requirements
+            constraintName: chk_job_requirements_weightage_range
+            checkCondition: "weightage IS NULL OR (weightage >= 0 AND weightage <= 1)"
+

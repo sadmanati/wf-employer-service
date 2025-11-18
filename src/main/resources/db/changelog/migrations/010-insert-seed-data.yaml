@@ -1,0 +1,417 @@
+databaseChangeLog:
+  - changeSet:
+      id: 010-insert-seed-data
+      author: wf-system
+      changes:
+        # Seed reason codes for Workforce UAE validators
+        - insert:
+            tableName: reason_codes
+            columns:
+              - column:
+                  name: code
+                  value: WF_INCOMPLETE_INFO
+              - column:
+                  name: description
+                  value: Incomplete or missing required information
+              - column:
+                  name: applicable_to
+                  value: workforce_uae
+              - column:
+                  name: action_type
+                  value: return
+              - column:
+                  name: workflow_consequence
+                  value: rework
+              - column:
+                  name: is_active
+                  valueBoolean: true
+              - column:
+                  name: display_order
+                  valueNumeric: 1
+
+        - insert:
+            tableName: reason_codes
+            columns:
+              - column:
+                  name: code
+                  value: WF_INVALID_LICENSE
+              - column:
+                  name: description
+                  value: Invalid or expired trade license
+              - column:
+                  name: applicable_to
+                  value: workforce_uae
+              - column:
+                  name: action_type
+                  value: reject
+              - column:
+                  name: workflow_consequence
+                  value: hard_stop
+              - column:
+                  name: is_active
+                  valueBoolean: true
+              - column:
+                  name: display_order
+                  valueNumeric: 2
+
+        - insert:
+            tableName: reason_codes
+            columns:
+              - column:
+                  name: code
+                  value: WF_QUOTA_EXCEEDED
+              - column:
+                  name: description
+                  value: Requested quantity exceeds available quota
+              - column:
+                  name: applicable_to
+                  value: workforce_uae
+              - column:
+                  name: action_type
+                  value: reject
+              - column:
+                  name: workflow_consequence
+                  value: hard_stop
+              - column:
+                  name: is_active
+                  valueBoolean: true
+              - column:
+                  name: display_order
+                  valueNumeric: 3
+
+        - insert:
+            tableName: reason_codes
+            columns:
+              - column:
+                  name: code
+                  value: WF_INVALID_SALARY
+              - column:
+                  name: description
+                  value: Salary below minimum wage requirements
+              - column:
+                  name: applicable_to
+                  value: workforce_uae
+              - column:
+                  name: action_type
+                  value: return
+              - column:
+                  name: workflow_consequence
+                  value: rework
+              - column:
+                  name: is_active
+                  valueBoolean: true
+              - column:
+                  name: display_order
+                  valueNumeric: 4
+
+        - insert:
+            tableName: reason_codes
+            columns:
+              - column:
+                  name: code
+                  value: WF_MOHRE_NON_COMPLIANT
+              - column:
+                  name: description
+                  value: Does not meet MOHRE compliance requirements
+              - column:
+                  name: applicable_to
+                  value: workforce_uae
+              - column:
+                  name: action_type
+                  value: reject
+              - column:
+                  name: workflow_consequence
+                  value: escalation
+              - column:
+                  name: is_active
+                  valueBoolean: true
+              - column:
+                  name: display_order
+                  valueNumeric: 5
+
+        - insert:
+            tableName: reason_codes
+            columns:
+              - column:
+                  name: code
+                  value: WF_UNCLEAR_JOB_DESC
+              - column:
+                  name: description
+                  value: Job description is unclear or incomplete
+              - column:
+                  name: applicable_to
+                  value: workforce_uae
+              - column:
+                  name: action_type
+                  value: return
+              - column:
+                  name: workflow_consequence
+                  value: rework
+              - column:
+                  name: is_active
+                  valueBoolean: true
+              - column:
+                  name: display_order
+                  valueNumeric: 6
+
+        - insert:
+            tableName: reason_codes
+            columns:
+              - column:
+                  name: code
+                  value: WF_UNREALISTIC_REQUIREMENTS
+              - column:
+                  name: description
+                  value: Job requirements are unrealistic for the position
+              - column:
+                  name: applicable_to
+                  value: workforce_uae
+              - column:
+                  name: action_type
+                  value: return
+              - column:
+                  name: workflow_consequence
+                  value: rework
+              - column:
+                  name: is_active
+                  valueBoolean: true
+              - column:
+                  name: display_order
+                  valueNumeric: 7
+
+        # Seed reason codes for Employers
+        - insert:
+            tableName: reason_codes
+            columns:
+              - column:
+                  name: code
+                  value: EMP_POSITION_FILLED
+              - column:
+                  name: description
+                  value: Position has been filled internally
+              - column:
+                  name: applicable_to
+                  value: employer
+              - column:
+                  name: action_type
+                  value: withdraw
+              - column:
+                  name: workflow_consequence
+                  value: none
+              - column:
+                  name: is_active
+                  valueBoolean: true
+              - column:
+                  name: display_order
+                  valueNumeric: 10
+
+        - insert:
+            tableName: reason_codes
+            columns:
+              - column:
+                  name: code
+                  value: EMP_BUDGET_CONSTRAINTS
+              - column:
+                  name: description
+                  value: Budget constraints or funding issues
+              - column:
+                  name: applicable_to
+                  value: employer
+              - column:
+                  name: action_type
+                  value: withdraw
+              - column:
+                  name: workflow_consequence
+                  value: none
+              - column:
+                  name: is_active
+                  valueBoolean: true
+              - column:
+                  name: display_order
+                  valueNumeric: 11
+
+        - insert:
+            tableName: reason_codes
+            columns:
+              - column:
+                  name: code
+                  value: EMP_PROJECT_CANCELLED
+              - column:
+                  name: description
+                  value: Associated project cancelled or postponed
+              - column:
+                  name: applicable_to
+                  value: employer
+              - column:
+                  name: action_type
+                  value: withdraw
+              - column:
+                  name: workflow_consequence
+                  value: none
+              - column:
+                  name: is_active
+                  valueBoolean: true
+              - column:
+                  name: display_order
+                  valueNumeric: 12
+
+        - insert:
+            tableName: reason_codes
+            columns:
+              - column:
+                  name: code
+                  value: EMP_REQUIREMENTS_CHANGE
+              - column:
+                  name: description
+                  value: Job requirements have changed significantly
+              - column:
+                  name: applicable_to
+                  value: employer
+              - column:
+                  name: action_type
+                  value: withdraw
+              - column:
+                  name: workflow_consequence
+                  value: rework
+              - column:
+                  name: is_active
+                  valueBoolean: true
+              - column:
+                  name: display_order
+                  valueNumeric: 13
+
+        - insert:
+            tableName: reason_codes
+            columns:
+              - column:
+                  name: code
+                  value: EMP_CANDIDATE_UNQUALIFIED
+              - column:
+                  name: description
+                  value: Candidate does not meet minimum qualifications
+              - column:
+                  name: applicable_to
+                  value: employer
+              - column:
+                  name: action_type
+                  value: reject
+              - column:
+                  name: workflow_consequence
+                  value: none
+              - column:
+                  name: is_active
+                  valueBoolean: true
+              - column:
+                  name: display_order
+                  valueNumeric: 14
+
+        - insert:
+            tableName: reason_codes
+            columns:
+              - column:
+                  name: code
+                  value: EMP_POOR_INTERVIEW_PERFORMANCE
+              - column:
+                  name: description
+                  value: Candidate performed poorly during interview
+              - column:
+                  name: applicable_to
+                  value: employer
+              - column:
+                  name: action_type
+                  value: reject
+              - column:
+                  name: workflow_consequence
+                  value: none
+              - column:
+                  name: is_active
+                  valueBoolean: true
+              - column:
+                  name: display_order
+                  valueNumeric: 15
+
+        - insert:
+            tableName: reason_codes
+            columns:
+              - column:
+                  name: code
+                  value: EMP_BACKGROUND_CHECK_FAILED
+              - column:
+                  name: description
+                  value: Candidate failed background verification
+              - column:
+                  name: applicable_to
+                  value: employer
+              - column:
+                  name: action_type
+                  value: reject
+              - column:
+                  name: workflow_consequence
+                  value: hard_stop
+              - column:
+                  name: is_active
+                  valueBoolean: true
+              - column:
+                  name: display_order
+                  valueNumeric: 16
+
+        - insert:
+            tableName: reason_codes
+            columns:
+              - column:
+                  name: code
+                  value: EMP_SALARY_EXPECTATIONS_MISMATCH
+              - column:
+                  name: description
+                  value: Candidate salary expectations exceed budget
+              - column:
+                  name: applicable_to
+                  value: employer
+              - column:
+                  name: action_type
+                  value: reject
+              - column:
+                  name: workflow_consequence
+                  value: none
+              - column:
+                  name: is_active
+                  valueBoolean: true
+              - column:
+                  name: display_order
+                  valueNumeric: 17
+                  name: is_active
+                  valueBoolean: true
+              - column:
+                  name: display_order
+                  valueNumeric: 14
+
+        - insert:
+            tableName: reason_codes
+            columns:
+              - column:
+                  name: code
+                  value: EMP_CANDIDATE_EXPERIENCE
+              - column:
+                  name: description
+                  value: Insufficient relevant work experience
+              - column:
+                  name: applicable_to
+                  value: employer
+              - column:
+                  name: action_type
+                  value: reject
+              - column:
+                  name: workflow_consequence
+                  value: none
+              - column:
+                  name: is_active
+                  valueBoolean: true
+              - column:
+                  name: display_order
+                  valueNumeric: 15
+
+      rollback:
+        - delete:
+            tableName: reason_codes
+            where: code IN ('WF_INCOMPLETE_INFO', 'WF_INVALID_LICENSE', 'WF_QUOTA_EXCEEDED', 'WF_INVALID_SALARY', 'WF_MOHRE_NON_COMPLIANT', 'WF_UNCLEAR_JOB_DESC', 'WF_UNREALISTIC_REQUIREMENTS', 'EMP_POSITION_FILLED', 'EMP_BUDGET_CONSTRAINTS', 'EMP_PROJECT_CANCELLED', 'EMP_REQUIREMENTS_CHANGE', 'EMP_CANDIDATE_UNQUALIFIED', 'EMP_CANDIDATE_EXPERIENCE')
+

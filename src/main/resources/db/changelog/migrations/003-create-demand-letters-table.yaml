@@ -1,0 +1,156 @@
+databaseChangeLog:
+  - changeSet:
+      id: 003-create-demand-letters-table
+      author: wf-system
+      changes:
+        - createTable:
+            tableName: demand_letters
+            remarks: Demand letters issued by employers for workforce allocation
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_demand_letters
+                  defaultValueComputed: gen_random_uuid()
+
+              - column:
+                  name: employer_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: employer_quota_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: demand_letter_number
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+                    unique: true
+                    uniqueConstraintName: uk_demand_letters_number
+
+              - column:
+                  name: job_category
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: requested_quantity
+                  type: integer
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: salary_offered
+                  type: decimal(10,2)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: contract_duration_months
+                  type: integer
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: terms_and_conditions
+                  type: text
+                  constraints:
+                    nullable: true
+
+              - column:
+                  name: document_url
+                  type: varchar(500)
+                  constraints:
+                    nullable: true
+
+              - column:
+                  name: status
+                  type: varchar(30)
+                  constraints:
+                    nullable: false
+                  defaultValue: draft
+                  remarks: Enum - draft, submitted, under_review, approved, rejected, expired
+
+              - column:
+                  name: reviewed_by
+                  type: uuid
+                  constraints:
+                    nullable: true
+                  remarks: Reference to user service (Workforce UAE validator)
+
+              - column:
+                  name: reviewed_at
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: true
+
+              - column:
+                  name: review_notes
+                  type: text
+                  constraints:
+                    nullable: true
+
+              - column:
+                  name: rejection_reason_code
+                  type: varchar(50)
+                  constraints:
+                    nullable: true
+
+              - column:
+                  name: created_at
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: false
+                  defaultValueComputed: current_timestamp
+
+              - column:
+                  name: updated_at
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: false
+                  defaultValueComputed: current_timestamp
+
+        - addForeignKeyConstraint:
+            baseTableName: demand_letters
+            baseColumnNames: employer_id
+            referencedTableName: employers
+            referencedColumnNames: id
+            constraintName: fk_demand_letters_employer
+            onDelete: CASCADE
+
+        - addForeignKeyConstraint:
+            baseTableName: demand_letters
+            baseColumnNames: employer_quota_id
+            referencedTableName: employer_quotas
+            referencedColumnNames: id
+            constraintName: fk_demand_letters_quota
+            onDelete: RESTRICT
+
+        - addCheckConstraint:
+            tableName: demand_letters
+            constraintName: chk_demand_letters_quantity_positive
+            checkCondition: "requested_quantity > 0"
+
+        - addCheckConstraint:
+            tableName: demand_letters
+            constraintName: chk_demand_letters_salary_positive
+            checkCondition: "salary_offered > 0"
+
+        - addCheckConstraint:
+            tableName: demand_letters
+            constraintName: chk_demand_letters_contract_duration
+            checkCondition: "contract_duration_months > 0 AND contract_duration_months <= 60"
+
+        - addCheckConstraint:
+            tableName: demand_letters
+            constraintName: chk_demand_letters_status
+            checkCondition: "status IN ('draft', 'submitted', 'under_review', 'approved', 'rejected', 'expired')"
+

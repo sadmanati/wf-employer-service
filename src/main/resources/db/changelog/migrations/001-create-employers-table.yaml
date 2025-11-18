@@ -1,0 +1,119 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-create-employers-table
+      author: wf-system
+      changes:
+        - createTable:
+            tableName: employers
+            remarks: Employer master profile table
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_employers
+                  defaultValueComputed: gen_random_uuid()
+
+              - column:
+                  name: user_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                  remarks: Reference to user service (external)
+
+              - column:
+                  name: company_name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: trade_license_number
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+                    unique: true
+                    uniqueConstraintName: uk_employers_trade_license
+
+              - column:
+                  name: trade_license_expiry
+                  type: date
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: mohre_establishment_id
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+                    unique: true
+                    uniqueConstraintName: uk_employers_mohre_id
+
+              - column:
+                  name: tax_registration_number
+                  type: varchar(50)
+                  constraints:
+                    nullable: true
+
+              - column:
+                  name: address
+                  type: text
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: city
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: emirate
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: status
+                  type: varchar(30)
+                  constraints:
+                    nullable: false
+                  defaultValue: active
+                  remarks: Enum - active, suspended, under_investigation
+
+              - column:
+                  name: contact_details
+                  type: jsonb
+                  constraints:
+                    nullable: true
+                  remarks: JSON object with phone, email, fax, etc.
+
+              - column:
+                  name: created_at
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: false
+                  defaultValueComputed: current_timestamp
+
+              - column:
+                  name: updated_at
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: false
+                  defaultValueComputed: current_timestamp
+
+        - addCheckConstraint:
+            tableName: employers
+            constraintName: chk_employers_status
+            checkCondition: "status IN ('active', 'suspended', 'under_investigation')"
+
+        - addCheckConstraint:
+            tableName: employers
+            constraintName: chk_employers_emirate
+            checkCondition: "emirate IN ('Abu Dhabi', 'Dubai', 'Sharjah', 'Ajman', 'Umm Al Quwain', 'Ras Al Khaimah', 'Fujairah')"
+
+      rollback:
+        - dropTable:
+            tableName: employers
+

@@ -1,0 +1,117 @@
+databaseChangeLog:
+  - changeSet:
+      id: 002-create-employer-quotas-table
+      author: wf-system
+      changes:
+        - createTable:
+            tableName: employer_quotas
+            remarks: Quota allocation per job category for employers
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_employer_quotas
+                  defaultValueComputed: gen_random_uuid()
+
+              - column:
+                  name: employer_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: job_category
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: total_quota
+                  type: integer
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: used_quota
+                  type: integer
+                  constraints:
+                    nullable: false
+                  defaultValue: 0
+
+              - column:
+                  name: available_quota
+                  type: integer
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: valid_from
+                  type: date
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: valid_until
+                  type: date
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: mohre_reference
+                  type: varchar(100)
+                  constraints:
+                    nullable: true
+
+              - column:
+                  name: created_at
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: false
+                  defaultValueComputed: current_timestamp
+
+              - column:
+                  name: updated_at
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: false
+                  defaultValueComputed: current_timestamp
+
+        - addForeignKeyConstraint:
+            baseTableName: employer_quotas
+            baseColumnNames: employer_id
+            referencedTableName: employers
+            referencedColumnNames: id
+            constraintName: fk_employer_quotas_employer
+            onDelete: CASCADE
+
+        - addUniqueConstraint:
+            tableName: employer_quotas
+            columnNames: employer_id, job_category, valid_from, valid_until
+            constraintName: uk_employer_quotas_unique_period
+
+        - addCheckConstraint:
+            tableName: employer_quotas
+            constraintName: chk_employer_quotas_total_positive
+            checkCondition: "total_quota > 0"
+
+        - addCheckConstraint:
+            tableName: employer_quotas
+            constraintName: chk_employer_quotas_used_non_negative
+            checkCondition: "used_quota >= 0"
+
+        - addCheckConstraint:
+            tableName: employer_quotas
+            constraintName: chk_employer_quotas_available
+            checkCondition: "available_quota = (total_quota - used_quota)"
+
+        - addCheckConstraint:
+            tableName: employer_quotas
+            constraintName: chk_employer_quotas_valid_dates
+            checkCondition: "valid_until > valid_from"
+
+      rollback:
+        - dropTable:
+            tableName: employer_quotas
+

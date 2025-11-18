@@ -1,0 +1,312 @@
+databaseChangeLog:
+  - changeSet:
+      id: 009-create-indexes
+      author: wf-system
+      changes:
+        # Employers indexes
+        - createIndex:
+            tableName: employers
+            indexName: idx_employers_user_id
+            columns:
+              - column:
+                  name: user_id
+
+        - createIndex:
+            tableName: employers
+            indexName: idx_employers_status
+            columns:
+              - column:
+                  name: status
+
+        - createIndex:
+            tableName: employers
+            indexName: idx_employers_emirate
+            columns:
+              - column:
+                  name: emirate
+
+        - createIndex:
+            tableName: employers
+            indexName: idx_employers_created_at
+            columns:
+              - column:
+                  name: created_at
+                  descending: true
+
+        # Employer quotas indexes
+        - createIndex:
+            tableName: employer_quotas
+            indexName: idx_employer_quotas_employer_id
+            columns:
+              - column:
+                  name: employer_id
+
+        - createIndex:
+            tableName: employer_quotas
+            indexName: idx_employer_quotas_job_category
+            columns:
+              - column:
+                  name: job_category
+
+        - createIndex:
+            tableName: employer_quotas
+            indexName: idx_employer_quotas_valid_dates
+            columns:
+              - column:
+                  name: valid_from
+              - column:
+                  name: valid_until
+
+        - createIndex:
+            tableName: employer_quotas
+            indexName: idx_employer_quotas_available
+            columns:
+              - column:
+                  name: available_quota
+            where: available_quota > 0
+
+        # Demand letters indexes
+        - createIndex:
+            tableName: demand_letters
+            indexName: idx_demand_letters_employer_id
+            columns:
+              - column:
+                  name: employer_id
+
+        - createIndex:
+            tableName: demand_letters
+            indexName: idx_demand_letters_status
+            columns:
+              - column:
+                  name: status
+
+        - createIndex:
+            tableName: demand_letters
+            indexName: idx_demand_letters_job_category
+            columns:
+              - column:
+                  name: job_category
+
+        - createIndex:
+            tableName: demand_letters
+            indexName: idx_demand_letters_reviewed_by
+            columns:
+              - column:
+                  name: reviewed_by
+            where: reviewed_by IS NOT NULL
+
+        - createIndex:
+            tableName: demand_letters
+            indexName: idx_demand_letters_created_at
+            columns:
+              - column:
+                  name: created_at
+                  descending: true
+
+        # Job orders indexes
+        - createIndex:
+            tableName: job_orders
+            indexName: idx_job_orders_employer_id
+            columns:
+              - column:
+                  name: employer_id
+
+        - createIndex:
+            tableName: job_orders
+            indexName: idx_job_orders_demand_letter_id
+            columns:
+              - column:
+                  name: demand_letter_id
+            where: demand_letter_id IS NOT NULL
+
+        - createIndex:
+            tableName: job_orders
+            indexName: idx_job_orders_status
+            columns:
+              - column:
+                  name: status
+
+        - createIndex:
+            tableName: job_orders
+            indexName: idx_job_orders_job_category
+            columns:
+              - column:
+                  name: job_category
+
+        - createIndex:
+            tableName: job_orders
+            indexName: idx_job_orders_status_category
+            columns:
+              - column:
+                  name: status
+              - column:
+                  name: job_category
+
+        - createIndex:
+            tableName: job_orders
+            indexName: idx_job_orders_open_for_sourcing
+            columns:
+              - column:
+                  name: status
+              - column:
+                  name: required_start_date
+            where: status = 'open_for_sourcing'
+
+        - createIndex:
+            tableName: job_orders
+            indexName: idx_job_orders_validated_by
+            columns:
+              - column:
+                  name: validated_by
+            where: validated_by IS NOT NULL
+
+        - createIndex:
+            tableName: job_orders
+            indexName: idx_job_orders_created_by
+            columns:
+              - column:
+                  name: created_by
+
+        - createIndex:
+            tableName: job_orders
+            indexName: idx_job_orders_created_at
+            columns:
+              - column:
+                  name: created_at
+                  descending: true
+
+        # Job requirements indexes
+        - createIndex:
+            tableName: job_requirements
+            indexName: idx_job_requirements_job_order_id
+            columns:
+              - column:
+                  name: job_order_id
+
+        - createIndex:
+            tableName: job_requirements
+            indexName: idx_job_requirements_category
+            columns:
+              - column:
+                  name: category
+
+        - createIndex:
+            tableName: job_requirements
+            indexName: idx_job_requirements_type_category
+            columns:
+              - column:
+                  name: requirement_type
+              - column:
+                  name: category
+
+        # Reason codes indexes
+        - createIndex:
+            tableName: reason_codes
+            indexName: idx_reason_codes_applicable_to
+            columns:
+              - column:
+                  name: applicable_to
+
+        - createIndex:
+            tableName: reason_codes
+            indexName: idx_reason_codes_action_type
+            columns:
+              - column:
+                  name: action_type
+
+        - createIndex:
+            tableName: reason_codes
+            indexName: idx_reason_codes_active_display_order
+            columns:
+              - column:
+                  name: is_active
+              - column:
+                  name: display_order
+            where: is_active = true
+
+      rollback:
+        - dropIndex:
+            tableName: employers
+            indexName: idx_employers_user_id
+        - dropIndex:
+            tableName: employers
+            indexName: idx_employers_status
+        - dropIndex:
+            tableName: employers
+            indexName: idx_employers_emirate
+        - dropIndex:
+            tableName: employers
+            indexName: idx_employers_created_at
+        - dropIndex:
+            tableName: employer_quotas
+            indexName: idx_employer_quotas_employer_id
+        - dropIndex:
+            tableName: employer_quotas
+            indexName: idx_employer_quotas_job_category
+        - dropIndex:
+            tableName: employer_quotas
+            indexName: idx_employer_quotas_valid_dates
+        - dropIndex:
+            tableName: employer_quotas
+            indexName: idx_employer_quotas_available
+        - dropIndex:
+            tableName: demand_letters
+            indexName: idx_demand_letters_employer_id
+        - dropIndex:
+            tableName: demand_letters
+            indexName: idx_demand_letters_status
+        - dropIndex:
+            tableName: demand_letters
+            indexName: idx_demand_letters_job_category
+        - dropIndex:
+            tableName: demand_letters
+            indexName: idx_demand_letters_reviewed_by
+        - dropIndex:
+            tableName: demand_letters
+            indexName: idx_demand_letters_created_at
+        - dropIndex:
+            tableName: job_orders
+            indexName: idx_job_orders_employer_id
+        - dropIndex:
+            tableName: job_orders
+            indexName: idx_job_orders_demand_letter_id
+        - dropIndex:
+            tableName: job_orders
+            indexName: idx_job_orders_status
+        - dropIndex:
+            tableName: job_orders
+            indexName: idx_job_orders_job_category
+        - dropIndex:
+            tableName: job_orders
+            indexName: idx_job_orders_status_category
+        - dropIndex:
+            tableName: job_orders
+            indexName: idx_job_orders_open_for_sourcing
+        - dropIndex:
+            tableName: job_orders
+            indexName: idx_job_orders_validated_by
+        - dropIndex:
+            tableName: job_orders
+            indexName: idx_job_orders_created_by
+        - dropIndex:
+            tableName: job_orders
+            indexName: idx_job_orders_created_at
+        - dropIndex:
+            tableName: job_requirements
+            indexName: idx_job_requirements_job_order_id
+        - dropIndex:
+            tableName: job_requirements
+            indexName: idx_job_requirements_category
+        - dropIndex:
+            tableName: job_requirements
+            indexName: idx_job_requirements_type_category
+        - dropIndex:
+            tableName: reason_codes
+            indexName: idx_reason_codes_applicable_to
+        - dropIndex:
+            tableName: reason_codes
+            indexName: idx_reason_codes_action_type
+        - dropIndex:
+            tableName: reason_codes
+            indexName: idx_reason_codes_active_display_order
+

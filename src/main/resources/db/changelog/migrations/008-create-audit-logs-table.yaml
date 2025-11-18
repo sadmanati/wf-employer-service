@@ -1,0 +1,120 @@
+databaseChangeLog:
+  - changeSet:
+      id: 008-create-audit-logs-table
+      author: wf-system
+      changes:
+        - createTable:
+            tableName: audit_logs
+            remarks: Comprehensive audit trail for all entity changes and actions
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_audit_logs
+                  defaultValueComputed: gen_random_uuid()
+
+              - column:
+                  name: user_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                  remarks: Reference to user service (user who performed the action)
+
+              - column:
+                  name: entity_type
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+                  remarks: employer, quota, demand_letter, job_order, etc.
+
+              - column:
+                  name: entity_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: action
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+                  remarks: Enum - create, update, delete, approve, reject, view
+
+              - column:
+                  name: old_values
+                  type: jsonb
+                  constraints:
+                    nullable: true
+                  remarks: Snapshot of entity before change
+
+              - column:
+                  name: new_values
+                  type: jsonb
+                  constraints:
+                    nullable: true
+                  remarks: Snapshot of entity after change
+
+              - column:
+                  name: ip_address
+                  type: varchar(45)
+                  constraints:
+                    nullable: true
+                  remarks: IPv4 or IPv6 address
+
+              - column:
+                  name: user_agent
+                  type: varchar(500)
+                  constraints:
+                    nullable: true
+
+              - column:
+                  name: notes
+                  type: text
+                  constraints:
+                    nullable: true
+
+              - column:
+                  name: created_at
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: false
+                  defaultValueComputed: current_timestamp
+
+        - addCheckConstraint:
+            tableName: audit_logs
+            constraintName: chk_audit_logs_action
+            checkCondition: "action IN ('create', 'update', 'delete', 'approve', 'reject', 'view')"
+
+        - createIndex:
+            tableName: audit_logs
+            indexName: idx_audit_logs_user_id
+            columns:
+              - column:
+                  name: user_id
+
+        - createIndex:
+            tableName: audit_logs
+            indexName: idx_audit_logs_entity
+            columns:
+              - column:
+                  name: entity_type
+              - column:
+                  name: entity_id
+
+        - createIndex:
+            tableName: audit_logs
+            indexName: idx_audit_logs_created_at
+            columns:
+              - column:
+                  name: created_at
+                  descending: true
+
+        - createIndex:
+            tableName: audit_logs
+            indexName: idx_audit_logs_action
+            columns:
+              - column:
+                  name: action
+
