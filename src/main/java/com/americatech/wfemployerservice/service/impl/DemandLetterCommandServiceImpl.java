@@ -103,12 +103,12 @@ public class DemandLetterCommandServiceImpl implements DemandLetterCommandServic
 
     private EmployerEntity findEmployer(UUID employerId) {
         return employerRepository.findById(employerId)
-                .orElseThrow(() -> new EntityNotFoundException("Employer not found: " + employerId));
+                .orElseThrow(() -> new EntityNotFoundException("EmployerModel not found: " + employerId));
     }
 
     private EmployerQuotaEntity findEmployerQuota(UUID quotaId) {
         return employerQuotaRepository.findById(quotaId)
-                .orElseThrow(() -> new EntityNotFoundException("Employer quota not found: " + quotaId));
+                .orElseThrow(() -> new EntityNotFoundException("EmployerModel quota not found: " + quotaId));
     }
 
     private void applyDefaults(DemandLetterEntity letter) {
@@ -156,7 +156,7 @@ public class DemandLetterCommandServiceImpl implements DemandLetterCommandServic
         if (quota.getEmployer() == null || quota.getEmployer().getId() == null ||
                 letter.getEmployer() == null || letter.getEmployer().getId() == null ||
                 !quota.getEmployer().getId().equals(letter.getEmployer().getId())) {
-            throw new IllegalArgumentException("Employer quota does not belong to the specified employer");
+            throw new IllegalArgumentException("EmployerModel quota does not belong to the specified employer");
         }
         // job category match
         if (quota.getJobCategory() != null && letter.getJobCategory() != null &&

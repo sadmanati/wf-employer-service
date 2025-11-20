@@ -5,7 +5,7 @@ databaseChangeLog:
       changes:
         - createTable:
             tableName: employers
-            remarks: Employer master profile table
+            remarks: EmployerModel master profile table
             columns:
               - column:
                   name: id

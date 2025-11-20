@@ -112,7 +112,7 @@ public class JobOrderCommandServiceImpl implements JobOrderCommandService {
 
     private EmployerEntity findEmployer(UUID employerId) {
         return employerRepository.findById(employerId)
-                .orElseThrow(() -> new EntityNotFoundException("Employer not found: " + employerId));
+                .orElseThrow(() -> new EntityNotFoundException("EmployerModel not found: " + employerId));
     }
 
     private DemandLetterEntity findDemandLetter(UUID letterId) {

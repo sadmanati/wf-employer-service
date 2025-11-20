@@ -23,7 +23,7 @@ public class EmployerQuotaQueryServiceImpl implements EmployerQuotaQueryService 
     @Override
     public EmployerQuotaEntity getById(UUID id) {
         return quotaRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Employer quota not found: " + id));
+                .orElseThrow(() -> new EntityNotFoundException("EmployerModel quota not found: " + id));
     }
 
     @Override

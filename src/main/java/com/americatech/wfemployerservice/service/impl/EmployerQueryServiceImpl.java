@@ -1,6 +1,6 @@
 package com.americatech.wfemployerservice.service.impl;
 
-import com.americatech.wfemployerservice.domain.Employer;
+import com.americatech.wfemployerservice.domain.EmployerModel;
 import com.americatech.wfemployerservice.entity.EmployerEntity;
 import com.americatech.wfemployerservice.mapper.EmployerEntityMapper;
 import com.americatech.wfemployerservice.repository.EmployerRepository;
@@ -26,14 +26,14 @@ public class EmployerQueryServiceImpl implements EmployerQueryService {
     }
 
     @Override
-    public Employer getById(UUID id) {
+    public EmployerModel getById(UUID id) {
         EmployerEntity entity = employerRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Employer not found: " + id));
+                .orElseThrow(() -> new EntityNotFoundException("EmployerModel not found: " + id));
         return employerEntityMapper.entityToDomainModel(entity);
     }
 
     @Override
-    public List<Employer> getAll() {
+    public List<EmployerModel> getAll() {
         return employerEntityMapper.entityToDomainModel(employerRepository.findAll());
     }
 }

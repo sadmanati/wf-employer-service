@@ -13,7 +13,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Employer {
+public class EmployerModel {
     private UUID id;
     private UUID userId;
     private String companyName;

@@ -1,11 +1,11 @@
 package com.americatech.wfemployerservice.service;
 
-import com.americatech.wfemployerservice.domain.Employer;
+import com.americatech.wfemployerservice.domain.EmployerModel;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface EmployerQueryService {
-    Employer getById(UUID id);
-    List<Employer> getAll();
+    EmployerModel getById(UUID id);
+    List<EmployerModel> getAll();
 }

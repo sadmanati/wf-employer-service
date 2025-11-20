@@ -59,7 +59,7 @@ public class EmployerQuotaCommandServiceImpl implements EmployerQuotaCommandServ
     @Override
     public void delete(UUID id) {
         if (!quotaRepository.existsById(id)) {
-            throw new EntityNotFoundException("Employer quota not found: " + id);
+            throw new EntityNotFoundException("EmployerModel quota not found: " + id);
         }
         quotaRepository.deleteById(id);
     }
@@ -74,7 +74,7 @@ public class EmployerQuotaCommandServiceImpl implements EmployerQuotaCommandServ
 
     private EmployerEntity findEmployer(UUID employerId) {
         return employerRepository.findById(employerId)
-                .orElseThrow(() -> new EntityNotFoundException("Employer not found: " + employerId));
+                .orElseThrow(() -> new EntityNotFoundException("EmployerModel not found: " + employerId));
     }
 
     private void applyDerivedAndValidate(EmployerQuotaEntity quota) {

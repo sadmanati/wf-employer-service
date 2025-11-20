@@ -49,7 +49,7 @@ public class EmployerCommandServiceImpl implements EmployerCommandService {
     @Override
     public void delete(UUID id) {
         if (!employerRepository.existsById(id)) {
-            throw new EntityNotFoundException("Employer not found: " + id);
+            throw new EntityNotFoundException("EmployerModel not found: " + id);
         }
         employerRepository.deleteById(id);
     }

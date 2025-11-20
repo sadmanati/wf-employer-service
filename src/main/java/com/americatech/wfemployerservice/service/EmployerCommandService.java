@@ -1,11 +1,11 @@
 package com.americatech.wfemployerservice.service;
 
-import com.americatech.wfemployerservice.domain.Employer;
+import com.americatech.wfemployerservice.domain.EmployerModel;
 
 import java.util.UUID;
 
 public interface EmployerCommandService {
-    Employer create(Employer employer);
-    Employer update(UUID id, Employer employer);
+    EmployerModel create(EmployerModel employer);
+    EmployerModel update(UUID id, EmployerModel employer);
     void delete(UUID id);
 }

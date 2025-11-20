@@ -1,4 +1,4 @@
--- Employer Service Database Initialization Script
+-- EmployerModel Service Database Initialization Script
 -- Run this script as PostgreSQL superuser to set up the database
 
 -- Create database
