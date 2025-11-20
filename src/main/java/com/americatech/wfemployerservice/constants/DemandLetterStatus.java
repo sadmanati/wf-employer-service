@@ -1,9 +1,12 @@
 package com.americatech.wfemployerservice.constants;
 
+import lombok.Getter;
+
 import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Getter
 public enum DemandLetterStatus {
     DRAFT("draft"),
     SUBMITTED("submitted"),
@@ -16,14 +19,4 @@ public enum DemandLetterStatus {
 
     DemandLetterStatus(String code) { this.code = code; }
 
-    public String getCode() { return code; }
-
-    public static boolean isValid(String value) {
-        if (value == null) return false;
-        return Arrays.stream(values()).anyMatch(v -> v.code.equals(value));
-    }
-
-    public static Set<String> codes() {
-        return Arrays.stream(values()).map(DemandLetterStatus::getCode).collect(Collectors.toUnmodifiableSet());
-    }
 }

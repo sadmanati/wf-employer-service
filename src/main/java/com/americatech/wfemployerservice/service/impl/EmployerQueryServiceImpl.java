@@ -1,6 +1,8 @@
 package com.americatech.wfemployerservice.service.impl;
 
+import com.americatech.wfemployerservice.domain.Employer;
 import com.americatech.wfemployerservice.entity.EmployerEntity;
+import com.americatech.wfemployerservice.mapper.EmployerEntityMapper;
 import com.americatech.wfemployerservice.repository.EmployerRepository;
 import com.americatech.wfemployerservice.service.EmployerQueryService;
 import jakarta.persistence.EntityNotFoundException;
@@ -15,19 +17,23 @@ import java.util.UUID;
 public class EmployerQueryServiceImpl implements EmployerQueryService {
 
     private final EmployerRepository employerRepository;
+    private final EmployerEntityMapper employerEntityMapper;
 
-    public EmployerQueryServiceImpl(EmployerRepository employerRepository) {
+    public EmployerQueryServiceImpl(EmployerRepository employerRepository,
+                                    EmployerEntityMapper employerEntityMapper) {
         this.employerRepository = employerRepository;
+        this.employerEntityMapper = employerEntityMapper;
     }
 
     @Override
-    public EmployerEntity getById(UUID id) {
-        return employerRepository.findById(id)
+    public Employer getById(UUID id) {
+        EmployerEntity entity = employerRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Employer not found: " + id));
+        return employerEntityMapper.entityToDomainModel(entity);
     }
 
     @Override
-    public List<EmployerEntity> getAll() {
-        return employerRepository.findAll();
+    public List<Employer> getAll() {
+        return employerEntityMapper.entityToDomainModel(employerRepository.findAll());
     }
 }
