@@ -1,9 +1,10 @@
 package com.americatech.wfemployerservice.service.impl;
 
+import com.americatech.wfemployerservice.domain.EmployerModel;
 import com.americatech.wfemployerservice.entity.EmployerEntity;
+import com.americatech.wfemployerservice.mapper.EmployerEntityMapper;
 import com.americatech.wfemployerservice.repository.EmployerRepository;
 import com.americatech.wfemployerservice.service.EmployerCommandService;
-import com.americatech.wfemployerservice.service.EmployerQueryService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,23 +16,28 @@ import java.util.UUID;
 public class EmployerCommandServiceImpl implements EmployerCommandService {
 
     private final EmployerRepository employerRepository;
-    private final EmployerQueryService employerQueryService;
+    private final EmployerEntityMapper employerEntityMapper;
 
     public EmployerCommandServiceImpl(EmployerRepository employerRepository,
-                                      EmployerQueryService employerQueryService) {
+                                      EmployerEntityMapper employerEntityMapper) {
         this.employerRepository = employerRepository;
-        this.employerQueryService = employerQueryService;
+        this.employerEntityMapper = employerEntityMapper;
     }
 
     @Override
-    public EmployerEntity create(EmployerEntity employer) {
-        employer.setId(null); // ensure new entity
-        return employerRepository.save(employer);
+    public EmployerModel create(EmployerModel employer) {
+        EmployerEntity entity = employerEntityMapper.domainModelToEntity(employer);
+        entity.setId(null); // ensure new entity
+        EmployerEntity saved = employerRepository.save(entity);
+        return employerEntityMapper.entityToDomainModel(saved);
     }
 
     @Override
-    public EmployerEntity update(UUID id, EmployerEntity employer) {
-        EmployerEntity existing = employerQueryService.getById(id);
+    public EmployerModel update(UUID id, EmployerModel employer) {
+        EmployerEntity existing = employerRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("EmployerModel not found: " + id));
+
+        // map incoming domain model fields to existing entity
         existing.setUserId(employer.getUserId());
         existing.setCompanyName(employer.getCompanyName());
         existing.setTradeLicenseNumber(employer.getTradeLicenseNumber());
@@ -43,7 +49,9 @@ public class EmployerCommandServiceImpl implements EmployerCommandService {
         existing.setEmirate(employer.getEmirate());
         existing.setStatus(employer.getStatus());
         existing.setContactDetails(employer.getContactDetails());
-        return employerRepository.save(existing);
+
+        EmployerEntity saved = employerRepository.save(existing);
+        return employerEntityMapper.entityToDomainModel(saved);
     }
 
     @Override

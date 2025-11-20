@@ -1,6 +1,10 @@
 package com.americatech.wfemployerservice.controller;
 
-import com.americatech.wfemployerservice.entity.EmployerEntity;
+import com.americatech.wfemployerservice.domain.EmployerModel;
+import com.americatech.wfemployerservice.mapper.EmployerRequestMapper;
+import com.americatech.wfemployerservice.mapper.EmployerResponseMapper;
+import com.americatech.wfemployerservice.request.EmployerRequest;
+import com.americatech.wfemployerservice.response.EmployerResponse;
 import com.americatech.wfemployerservice.service.EmployerCommandService;
 import com.americatech.wfemployerservice.service.EmployerQueryService;
 import jakarta.persistence.EntityNotFoundException;
@@ -18,32 +22,43 @@ public class EmployerController {
 
     private final EmployerQueryService employerQueryService;
     private final EmployerCommandService employerCommandService;
+    private final EmployerRequestMapper employerRequestMapper;
+    private final EmployerResponseMapper employerResponseMapper;
 
     public EmployerController(EmployerQueryService employerQueryService,
-                              EmployerCommandService employerCommandService) {
+                              EmployerCommandService employerCommandService,
+                              EmployerRequestMapper employerRequestMapper,
+                              EmployerResponseMapper employerResponseMapper) {
         this.employerQueryService = employerQueryService;
         this.employerCommandService = employerCommandService;
+        this.employerRequestMapper = employerRequestMapper;
+        this.employerResponseMapper = employerResponseMapper;
     }
 
     @PostMapping
-    public ResponseEntity<EmployerEntity> create(@Valid @RequestBody EmployerEntity employer) {
-        EmployerEntity created = employerCommandService.create(employer);
-        return ResponseEntity.status(HttpStatus.CREATED).body(created);
+    public ResponseEntity<EmployerResponse> create(@Valid @RequestBody EmployerRequest request) {
+        EmployerModel model = employerRequestMapper.requestModelToDomainModel(request);
+        EmployerModel created = employerCommandService.create(model);
+        EmployerResponse response = employerResponseMapper.domainModelToResponseModel(created);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping("/{id}")
-    public EmployerEntity getById(@PathVariable UUID id) {
-        return employerQueryService.getById(id);
+    public EmployerResponse getById(@PathVariable UUID id) {
+        EmployerModel model = employerQueryService.getById(id);
+        return employerResponseMapper.domainModelToResponseModel(model);
     }
 
     @GetMapping
-    public List<EmployerEntity> getAll() {
-        return employerQueryService.getAll();
+    public List<EmployerResponse> getAll() {
+        return employerResponseMapper.domainModelToResponseModel(employerQueryService.getAll());
     }
 
     @PutMapping("/{id}")
-    public EmployerEntity update(@PathVariable UUID id, @Valid @RequestBody EmployerEntity employer) {
-        return employerCommandService.update(id, employer);
+    public EmployerResponse update(@PathVariable UUID id, @Valid @RequestBody EmployerRequest request) {
+        EmployerModel model = employerRequestMapper.requestModelToDomainModel(request);
+        EmployerModel updated = employerCommandService.update(id, model);
+        return employerResponseMapper.domainModelToResponseModel(updated);
     }
 
     @DeleteMapping("/{id}")
