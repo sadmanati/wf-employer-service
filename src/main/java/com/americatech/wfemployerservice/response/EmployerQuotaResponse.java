@@ -3,7 +3,7 @@ package com.americatech.wfemployerservice.response;
 import lombok.Data;
 
 import java.time.LocalDate;
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
@@ -17,6 +17,6 @@ public class EmployerQuotaResponse {
     private LocalDate validFrom;
     private LocalDate validUntil;
     private String mohreReference;
-    private OffsetDateTime createdAt;
-    private OffsetDateTime updatedAt;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

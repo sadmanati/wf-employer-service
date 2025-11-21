@@ -1,26 +1,20 @@
 package com.americatech.wfemployerservice.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
 @Table(name = "job_orders")
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class JobOrderEntity {
+@Setter
+@Getter
+public class JobOrderEntity extends Auditable {
 
     @Id
     @GeneratedValue
@@ -85,16 +79,5 @@ public class JobOrderEntity {
     private UUID validatedBy;
 
     @Column(name = "validated_at", columnDefinition = "timestamp with time zone")
-    private OffsetDateTime validatedAt;
-
-    @Column(name = "created_by", nullable = false, columnDefinition = "uuid")
-    private UUID createdBy;
-
-    @CreationTimestamp
-    @Column(name = "created_at", nullable = false, columnDefinition = "timestamp with time zone")
-    private OffsetDateTime createdAt;
-
-    @UpdateTimestamp
-    @Column(name = "updated_at", nullable = false, columnDefinition = "timestamp with time zone")
-    private OffsetDateTime updatedAt;
+    private LocalDateTime validatedAt;
 }

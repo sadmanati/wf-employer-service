@@ -1,25 +1,18 @@
 package com.americatech.wfemployerservice.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDate;
-import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Entity
 @Table(name = "employer_quotas")
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class EmployerQuotaEntity {
+@Setter
+@Getter
+public class EmployerQuotaEntity extends Auditable {
 
     @Id
     @GeneratedValue
@@ -51,12 +44,4 @@ public class EmployerQuotaEntity {
 
     @Column(name = "mohre_reference", length = 100)
     private String mohreReference;
-
-    @CreationTimestamp
-    @Column(name = "created_at", nullable = false, columnDefinition = "timestamp with time zone")
-    private OffsetDateTime createdAt;
-
-    @UpdateTimestamp
-    @Column(name = "updated_at", nullable = false, columnDefinition = "timestamp with time zone")
-    private OffsetDateTime updatedAt;
 }

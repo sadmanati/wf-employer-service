@@ -2,7 +2,7 @@ package com.americatech.wfemployerservice.response;
 
 import lombok.Data;
 
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
@@ -15,5 +15,5 @@ public class JobOrderHistoryResponse {
     private UUID changedBy;
     private String reasonCode;
     private String notes;
-    private OffsetDateTime createdAt;
+    private LocalDateTime createdAt;
 }

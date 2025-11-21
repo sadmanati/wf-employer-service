@@ -32,28 +32,14 @@ public class EmployerCommandServiceImpl implements EmployerCommandService {
         EmployerEntity existing = employerRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("EmployerModel not found: " + id));
 
-        // map incoming domain model fields to existing entity
-        existing.setUserId(employer.getUserId());
-        existing.setCompanyName(employer.getCompanyName());
-        existing.setTradeLicenseNumber(employer.getTradeLicenseNumber());
-        existing.setTradeLicenseExpiry(employer.getTradeLicenseExpiry());
-        existing.setMohreEstablishmentId(employer.getMohreEstablishmentId());
-        existing.setTaxRegistrationNumber(employer.getTaxRegistrationNumber());
-        existing.setAddress(employer.getAddress());
-        existing.setCity(employer.getCity());
-        existing.setEmirate(employer.getEmirate());
-        existing.setStatus(employer.getStatus());
-        existing.setContactDetails(employer.getContactDetails());
-
-        EmployerEntity saved = employerRepository.save(existing);
-        return employerEntityMapper.entityToDomainModel(saved);
+        EmployerEntity entity = employerEntityMapper.domainModelToEntity(employer);
+        entity.setId(existing.getId());
+        entity = employerRepository.save(entity);
+        return employerEntityMapper.entityToDomainModel(entity);
     }
 
     @Override
     public void delete(UUID id) {
-        if (!employerRepository.existsById(id)) {
-            throw new EntityNotFoundException("EmployerModel not found: " + id);
-        }
         employerRepository.deleteById(id);
     }
 }

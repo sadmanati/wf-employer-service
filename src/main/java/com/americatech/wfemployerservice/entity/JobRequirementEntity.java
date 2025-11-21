@@ -1,24 +1,18 @@
 package com.americatech.wfemployerservice.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.math.BigDecimal;
-import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Entity
 @Table(name = "job_requirements")
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class JobRequirementEntity {
+@Setter
+@Getter
+public class JobRequirementEntity extends Auditable {
 
     @Id
     @GeneratedValue
@@ -46,12 +40,8 @@ public class JobRequirementEntity {
     private Integer minYearsExperience;
 
     @Column(name = "weightage", precision = 5, scale = 2)
-    private BigDecimal weightage; // 0.00 .. 1.00
+    private BigDecimal weightage;
 
     @Column(name = "metadata", columnDefinition = "jsonb")
     private String metadata;
-
-    @CreationTimestamp
-    @Column(name = "created_at", nullable = false, columnDefinition = "timestamp with time zone")
-    private OffsetDateTime createdAt;
 }

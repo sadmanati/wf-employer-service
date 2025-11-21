@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/job-requirements")
@@ -31,38 +32,41 @@ public class JobRequirementController {
     @PostMapping
     public ResponseEntity<JobRequirementResponse> create(@Valid @RequestBody JobRequirementRequest requirement) {
         JobRequirementModel model = requestMapper.requestModelToDomainModel(requirement);
-        JobRequirementModel created = commandService.create(model);
-        JobRequirementResponse response = responseMapper.domainModelToResponseModel(created);
+        model = commandService.create(model);
+        JobRequirementResponse response = responseMapper.domainModelToResponseModel(model);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping("/{id}")
-    public JobRequirementResponse getById(@PathVariable UUID id) {
+    public ResponseEntity<JobRequirementResponse> getById(@PathVariable UUID id) {
         JobRequirementModel model = queryService.getById(id);
-        return responseMapper.domainModelToResponseModel(model);
+        JobRequirementResponse response = responseMapper.domainModelToResponseModel(model);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping
-    public List<JobRequirementResponse> getAll() {
-        return responseMapper.domainModelToResponseModel(queryService.getAll());
+    public ResponseEntity<List<JobRequirementResponse>> getAll() {
+        List<JobRequirementModel> models = queryService.getAll();
+        List<JobRequirementResponse> responses = models.stream()
+                .map(responseMapper::domainModelToResponseModel)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(responses);
     }
 
     @PutMapping("/{id}")
-    public JobRequirementResponse update(@PathVariable UUID id, @Valid @RequestBody JobRequirementRequest requirement) {
+    public ResponseEntity<JobRequirementResponse> update(@PathVariable UUID id,
+                                                         @Valid @RequestBody JobRequirementRequest requirement) {
         JobRequirementModel model = requestMapper.requestModelToDomainModel(requirement);
         JobRequirementModel updated = commandService.update(id, model);
-        return responseMapper.domainModelToResponseModel(updated);
+        JobRequirementResponse response = responseMapper.domainModelToResponseModel(updated);
+        return ResponseEntity.ok(response);
     }
+
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable UUID id) {
+    public ResponseEntity<Void> delete(@PathVariable UUID id) {
         commandService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 
-    @ExceptionHandler({EntityNotFoundException.class, IllegalArgumentException.class})
-    public ResponseEntity<String> handleErrors(RuntimeException ex) {
-        HttpStatus status = ex instanceof EntityNotFoundException ? HttpStatus.NOT_FOUND : HttpStatus.BAD_REQUEST;
-        return ResponseEntity.status(status).body(ex.getMessage());
-    }
 }

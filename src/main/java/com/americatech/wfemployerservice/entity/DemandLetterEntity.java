@@ -1,25 +1,20 @@
 package com.americatech.wfemployerservice.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.math.BigDecimal;
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
 @Table(name = "demand_letters")
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class DemandLetterEntity {
+@Setter
+@Getter
+public class DemandLetterEntity extends Auditable {
 
     @Id
     @GeneratedValue
@@ -63,19 +58,11 @@ public class DemandLetterEntity {
     private UUID reviewedBy;
 
     @Column(name = "reviewed_at", columnDefinition = "timestamp with time zone")
-    private OffsetDateTime reviewedAt;
+    private LocalDateTime reviewedAt;
 
     @Column(name = "review_notes", columnDefinition = "text")
     private String reviewNotes;
 
     @Column(name = "rejection_reason_code", length = 50)
     private String rejectionReasonCode;
-
-    @CreationTimestamp
-    @Column(name = "created_at", nullable = false, columnDefinition = "timestamp with time zone")
-    private OffsetDateTime createdAt;
-
-    @UpdateTimestamp
-    @Column(name = "updated_at", nullable = false, columnDefinition = "timestamp with time zone")
-    private OffsetDateTime updatedAt;
 }

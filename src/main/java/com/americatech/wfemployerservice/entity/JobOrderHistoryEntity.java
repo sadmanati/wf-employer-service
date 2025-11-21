@@ -1,23 +1,17 @@
 package com.americatech.wfemployerservice.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.UuidGenerator;
 
-import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Entity
 @Table(name = "job_order_history")
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class JobOrderHistoryEntity {
+@Setter
+@Getter
+public class JobOrderHistoryEntity extends Auditable {
 
     @Id
     @GeneratedValue
@@ -44,7 +38,4 @@ public class JobOrderHistoryEntity {
     @Column(name = "notes", columnDefinition = "text")
     private String notes;
 
-    @CreationTimestamp
-    @Column(name = "created_at", nullable = false, columnDefinition = "timestamp with time zone")
-    private OffsetDateTime createdAt;
 }

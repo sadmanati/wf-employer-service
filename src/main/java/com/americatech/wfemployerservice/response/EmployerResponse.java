@@ -3,7 +3,7 @@ package com.americatech.wfemployerservice.response;
 import lombok.Data;
 
 import java.time.LocalDate;
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
@@ -20,6 +20,6 @@ public class EmployerResponse {
     private String emirate;
     private String status;
     private String contactDetails;
-    private OffsetDateTime createdAt;
-    private OffsetDateTime updatedAt;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

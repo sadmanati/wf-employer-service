@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
@@ -26,9 +26,9 @@ public class DemandLetterModel {
     private String documentUrl;
     private String status;
     private UUID reviewedBy;
-    private OffsetDateTime reviewedAt;
+    private LocalDateTime reviewedAt;
     private String reviewNotes;
     private String rejectionReasonCode;
-    private OffsetDateTime createdAt;
-    private OffsetDateTime updatedAt;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

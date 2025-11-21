@@ -1,27 +1,22 @@
 package com.americatech.wfemployerservice.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDate;
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 
 
 @Entity
 @Table(name = "employers")
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class EmployerEntity {
+@Setter
+@Getter
+public class EmployerEntity extends Auditable {
 
     @Id
     @GeneratedValue
@@ -61,14 +56,5 @@ public class EmployerEntity {
 
     @Column(name = "contact_details", columnDefinition = "jsonb")
     private String contactDetails;
-
-    @CreationTimestamp
-    @Column(name = "created_at", nullable = false, columnDefinition = "timestamp with time zone")
-    private OffsetDateTime createdAt;
-
-    @UpdateTimestamp
-    @Column(name = "updated_at", nullable = false, columnDefinition = "timestamp with time zone")
-    private OffsetDateTime updatedAt;
-
 
 }

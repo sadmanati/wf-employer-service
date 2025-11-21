@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
@@ -23,5 +23,5 @@ public class JobRequirementModel {
     private Integer minYearsExperience;
     private BigDecimal weightage;
     private String metadata;
-    private OffsetDateTime createdAt;
+    private LocalDateTime createdAt;
 }

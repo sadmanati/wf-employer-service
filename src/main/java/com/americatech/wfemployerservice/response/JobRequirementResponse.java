@@ -3,7 +3,7 @@ package com.americatech.wfemployerservice.response;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
@@ -17,5 +17,5 @@ public class JobRequirementResponse {
     private Integer minYearsExperience;
     private BigDecimal weightage;
     private String metadata;
-    private OffsetDateTime createdAt;
+    private LocalDateTime createdAt;
 }

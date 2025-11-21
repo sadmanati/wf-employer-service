@@ -1,14 +1,12 @@
 package com.americatech.wfemployerservice.controller;
 
 import com.americatech.wfemployerservice.domain.EmployerQuotaModel;
-import com.americatech.wfemployerservice.entity.EmployerQuotaEntity;
 import com.americatech.wfemployerservice.mapper.EmployerQuotaRequestMapper;
 import com.americatech.wfemployerservice.mapper.EmployerQuotaResponseMapper;
 import com.americatech.wfemployerservice.request.EmployerQuotaRequest;
 import com.americatech.wfemployerservice.response.EmployerQuotaResponse;
 import com.americatech.wfemployerservice.service.EmployerQuotaCommandService;
 import com.americatech.wfemployerservice.service.EmployerQuotaQueryService;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/employer-quotas")
@@ -39,15 +38,19 @@ public class EmployerQuotaController {
 
     @GetMapping("/{id}")
     public ResponseEntity<EmployerQuotaResponse> getById(@PathVariable UUID id) {
-        EmployerQuotaModel model= quotaQueryService.getById(id);
+        EmployerQuotaModel model = quotaQueryService.getById(id);
         EmployerQuotaResponse response = responseMapper.domainModelToResponseModel(model);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-//    @GetMapping
-//    public List<EmployerQuotaResponse> getAll() {
-//        return quotaQueryService.getAll();
-//    }
+    @GetMapping
+    public ResponseEntity<List<EmployerQuotaResponse>> getAll() {
+        List<EmployerQuotaModel> models = quotaQueryService.getAll();
+        List<EmployerQuotaResponse> responses = models.stream()
+                .map(responseMapper::domainModelToResponseModel)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(responses);
+    }
 
     @PutMapping("/{id}")
     public EmployerQuotaResponse update(@PathVariable UUID id, @Valid @RequestBody EmployerQuotaRequest quota) {
