@@ -9,6 +9,7 @@ import com.americatech.wfemployerservice.repository.JobOrderRepository;
 import com.americatech.wfemployerservice.service.JobOrderCommandService;
 import com.americatech.wfemployerservice.service.JobOrderQueryService;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +19,7 @@ import java.util.UUID;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class JobOrderCommandServiceImpl implements JobOrderCommandService {
 
     private static final Set<String> ALLOWED_STATUS = Set.of(
@@ -30,19 +32,8 @@ public class JobOrderCommandServiceImpl implements JobOrderCommandService {
     private final DemandLetterRepository demandLetterRepository;
     private final JobOrderQueryService jobOrderQueryService;
 
-    public JobOrderCommandServiceImpl(JobOrderRepository jobOrderRepository,
-                                      EmployerRepository employerRepository,
-                                      DemandLetterRepository demandLetterRepository,
-                                      JobOrderQueryService jobOrderQueryService) {
-        this.jobOrderRepository = jobOrderRepository;
-        this.employerRepository = employerRepository;
-        this.demandLetterRepository = demandLetterRepository;
-        this.jobOrderQueryService = jobOrderQueryService;
-    }
-
     @Override
     public JobOrderEntity create(JobOrderEntity order) {
-        order.setId(null);
         attachRelations(order);
         applyDefaults(order);
         validate(order);

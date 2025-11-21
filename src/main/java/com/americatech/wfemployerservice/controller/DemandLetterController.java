@@ -1,10 +1,15 @@
 package com.americatech.wfemployerservice.controller;
 
-import com.americatech.wfemployerservice.entity.DemandLetterEntity;
+import com.americatech.wfemployerservice.domain.DemandLetterModel;
+import com.americatech.wfemployerservice.mapper.DemandLetterRequestMapper;
+import com.americatech.wfemployerservice.mapper.DemandLetterResponseMapper;
+import com.americatech.wfemployerservice.request.DemandLetterRequest;
+import com.americatech.wfemployerservice.response.DemandLetterResponse;
 import com.americatech.wfemployerservice.service.DemandLetterCommandService;
 import com.americatech.wfemployerservice.service.DemandLetterQueryService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,47 +19,46 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/demand-letters")
+@RequiredArgsConstructor
 public class DemandLetterController {
 
     private final DemandLetterQueryService queryService;
     private final DemandLetterCommandService commandService;
+    private final DemandLetterRequestMapper requestMapper;
+    private final DemandLetterResponseMapper responseMapper;
 
-    public DemandLetterController(DemandLetterQueryService queryService,
-                                  DemandLetterCommandService commandService) {
-        this.queryService = queryService;
-        this.commandService = commandService;
-    }
 
     @PostMapping
-    public ResponseEntity<DemandLetterEntity> create(@Valid @RequestBody DemandLetterEntity letter) {
-        DemandLetterEntity created = commandService.create(letter);
-        return ResponseEntity.status(HttpStatus.CREATED).body(created);
+    public ResponseEntity<DemandLetterResponse> create(@Valid @RequestBody DemandLetterRequest letter) {
+        DemandLetterModel model = requestMapper.requestModelToDomainModel(letter);
+        model = commandService.create(model);
+        DemandLetterResponse response = responseMapper.domainModelToResponseModel(model);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping("/{id}")
-    public DemandLetterEntity getById(@PathVariable UUID id) {
-        return queryService.getById(id);
+    public ResponseEntity<DemandLetterResponse> getById(@PathVariable UUID id) {
+        DemandLetterModel model = queryService.getById(id);
+        DemandLetterResponse response = responseMapper.domainModelToResponseModel(model);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @GetMapping
-    public List<DemandLetterEntity> getAll() {
-        return queryService.getAll();
+    public List<DemandLetterResponse> getAll() {
+        return responseMapper.domainModelToResponseModel(queryService.getAll());
     }
 
     @PutMapping("/{id}")
-    public DemandLetterEntity update(@PathVariable UUID id, @Valid @RequestBody DemandLetterEntity letter) {
-        return commandService.update(id, letter);
+    public ResponseEntity<DemandLetterResponse> update(@PathVariable UUID id, @Valid @RequestBody DemandLetterRequest letter) {
+        DemandLetterModel model = requestMapper.requestModelToDomainModel(letter);
+        model = commandService.update(id, model);
+        DemandLetterResponse response = responseMapper.domainModelToResponseModel(model);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable UUID id) {
         commandService.delete(id);
     }
 
-    @ExceptionHandler({EntityNotFoundException.class, IllegalArgumentException.class})
-    public ResponseEntity<String> handleErrors(RuntimeException ex) {
-        HttpStatus status = ex instanceof EntityNotFoundException ? HttpStatus.NOT_FOUND : HttpStatus.BAD_REQUEST;
-        return ResponseEntity.status(status).body(ex.getMessage());
-    }
 }

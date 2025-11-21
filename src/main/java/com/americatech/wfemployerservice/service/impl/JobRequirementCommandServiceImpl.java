@@ -8,6 +8,7 @@ import com.americatech.wfemployerservice.repository.JobOrderRepository;
 import com.americatech.wfemployerservice.repository.JobRequirementRepository;
 import com.americatech.wfemployerservice.service.JobRequirementCommandService;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +18,7 @@ import java.util.UUID;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class JobRequirementCommandServiceImpl implements JobRequirementCommandService {
 
     private static final Set<String> ALLOWED_TYPES = Set.of("mandatory", "preferred");
@@ -28,18 +30,10 @@ public class JobRequirementCommandServiceImpl implements JobRequirementCommandSe
     private final JobOrderRepository jobOrderRepository;
     private final JobRequirementEntityMapper entityMapper;
 
-    public JobRequirementCommandServiceImpl(JobRequirementRepository repository,
-                                            JobOrderRepository jobOrderRepository,
-                                            JobRequirementEntityMapper entityMapper) {
-        this.repository = repository;
-        this.jobOrderRepository = jobOrderRepository;
-        this.entityMapper = entityMapper;
-    }
 
     @Override
     public JobRequirementModel create(JobRequirementModel requirement) {
         JobRequirementEntity entity = entityMapper.domainModelToEntity(requirement);
-        entity.setId(null);
         attachJobOrder(entity);
         applyDefaults(entity);
         validate(entity);

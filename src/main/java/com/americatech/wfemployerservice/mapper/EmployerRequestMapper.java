@@ -3,21 +3,10 @@ package com.americatech.wfemployerservice.mapper;
 import com.americatech.wfemployerservice.domain.EmployerModel;
 import com.americatech.wfemployerservice.request.EmployerRequest;
 import org.mapstruct.Mapper;
+import org.mapstruct.MappingConstants;
+import org.mapstruct.ReportingPolicy;
 
-import java.util.List;
-
-@Mapper(componentModel = "spring")
+@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
 public interface EmployerRequestMapper extends DomainRequestMapper<EmployerModel, EmployerRequest> {
 
-    @Override
-    EmployerModel requestModelToDomainModel(EmployerRequest requestModel);
-
-    @Override
-    EmployerRequest domainModelToRequestModel(EmployerModel domainModel);
-
-    @Override
-    List<EmployerModel> requestModelToDomainModel(List<EmployerRequest> requestModel);
-
-    @Override
-    List<EmployerRequest> domainModelToRequestModel(List<EmployerModel> domainModel);
 }

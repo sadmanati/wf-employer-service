@@ -6,6 +6,7 @@ import com.americatech.wfemployerservice.mapper.JobRequirementEntityMapper;
 import com.americatech.wfemployerservice.repository.JobRequirementRepository;
 import com.americatech.wfemployerservice.service.JobRequirementQueryService;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,16 +15,12 @@ import java.util.UUID;
 
 @Service
 @Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class JobRequirementQueryServiceImpl implements JobRequirementQueryService {
 
     private final JobRequirementRepository repository;
     private final JobRequirementEntityMapper entityMapper;
 
-    public JobRequirementQueryServiceImpl(JobRequirementRepository repository,
-                                          JobRequirementEntityMapper entityMapper) {
-        this.repository = repository;
-        this.entityMapper = entityMapper;
-    }
 
     @Override
     public JobRequirementModel getById(UUID id) {

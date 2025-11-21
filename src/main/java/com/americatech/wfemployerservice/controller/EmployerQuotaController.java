@@ -1,10 +1,16 @@
 package com.americatech.wfemployerservice.controller;
 
+import com.americatech.wfemployerservice.domain.EmployerQuotaModel;
 import com.americatech.wfemployerservice.entity.EmployerQuotaEntity;
+import com.americatech.wfemployerservice.mapper.EmployerQuotaRequestMapper;
+import com.americatech.wfemployerservice.mapper.EmployerQuotaResponseMapper;
+import com.americatech.wfemployerservice.request.EmployerQuotaRequest;
+import com.americatech.wfemployerservice.response.EmployerQuotaResponse;
 import com.americatech.wfemployerservice.service.EmployerQuotaCommandService;
 import com.americatech.wfemployerservice.service.EmployerQuotaQueryService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,47 +20,45 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/employer-quotas")
+@RequiredArgsConstructor
 public class EmployerQuotaController {
 
     private final EmployerQuotaQueryService quotaQueryService;
     private final EmployerQuotaCommandService quotaCommandService;
+    private final EmployerQuotaRequestMapper requestMapper;
+    private final EmployerQuotaResponseMapper responseMapper;
 
-    public EmployerQuotaController(EmployerQuotaQueryService quotaQueryService,
-                                   EmployerQuotaCommandService quotaCommandService) {
-        this.quotaQueryService = quotaQueryService;
-        this.quotaCommandService = quotaCommandService;
-    }
 
     @PostMapping
-    public ResponseEntity<EmployerQuotaEntity> create(@Valid @RequestBody EmployerQuotaEntity quota) {
-        EmployerQuotaEntity created = quotaCommandService.create(quota);
-        return ResponseEntity.status(HttpStatus.CREATED).body(created);
+    public ResponseEntity<EmployerQuotaResponse> create(@Valid @RequestBody EmployerQuotaRequest quota) {
+        EmployerQuotaModel model = requestMapper.requestModelToDomainModel(quota);
+        model = quotaCommandService.create(model);
+        EmployerQuotaResponse response = responseMapper.domainModelToResponseModel(model);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping("/{id}")
-    public EmployerQuotaEntity getById(@PathVariable UUID id) {
-        return quotaQueryService.getById(id);
+    public ResponseEntity<EmployerQuotaResponse> getById(@PathVariable UUID id) {
+        EmployerQuotaModel model= quotaQueryService.getById(id);
+        EmployerQuotaResponse response = responseMapper.domainModelToResponseModel(model);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    @GetMapping
-    public List<EmployerQuotaEntity> getAll() {
-        return quotaQueryService.getAll();
-    }
+//    @GetMapping
+//    public List<EmployerQuotaResponse> getAll() {
+//        return quotaQueryService.getAll();
+//    }
 
     @PutMapping("/{id}")
-    public EmployerQuotaEntity update(@PathVariable UUID id, @Valid @RequestBody EmployerQuotaEntity quota) {
-        return quotaCommandService.update(id, quota);
+    public EmployerQuotaResponse update(@PathVariable UUID id, @Valid @RequestBody EmployerQuotaRequest quota) {
+        EmployerQuotaModel model = requestMapper.requestModelToDomainModel(quota);
+        model = quotaCommandService.update(id, model);
+        return responseMapper.domainModelToResponseModel(model);
     }
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable UUID id) {
         quotaCommandService.delete(id);
     }
 
-    @ExceptionHandler({EntityNotFoundException.class, IllegalArgumentException.class})
-    public ResponseEntity<String> handleErrors(RuntimeException ex) {
-        HttpStatus status = ex instanceof EntityNotFoundException ? HttpStatus.NOT_FOUND : HttpStatus.BAD_REQUEST;
-        return ResponseEntity.status(status).body(ex.getMessage());
-    }
 }

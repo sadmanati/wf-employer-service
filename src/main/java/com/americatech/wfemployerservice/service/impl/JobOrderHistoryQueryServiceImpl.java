@@ -4,6 +4,7 @@ import com.americatech.wfemployerservice.entity.JobOrderHistoryEntity;
 import com.americatech.wfemployerservice.repository.JobOrderHistoryRepository;
 import com.americatech.wfemployerservice.service.JobOrderHistoryQueryService;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,13 +13,10 @@ import java.util.UUID;
 
 @Service
 @Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class JobOrderHistoryQueryServiceImpl implements JobOrderHistoryQueryService {
 
     private final JobOrderHistoryRepository repository;
-
-    public JobOrderHistoryQueryServiceImpl(JobOrderHistoryRepository repository) {
-        this.repository = repository;
-    }
 
     @Override
     public JobOrderHistoryEntity getById(UUID id) {

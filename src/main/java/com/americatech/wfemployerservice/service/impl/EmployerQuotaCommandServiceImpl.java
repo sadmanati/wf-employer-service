@@ -1,59 +1,56 @@
 package com.americatech.wfemployerservice.service.impl;
 
+import com.americatech.wfemployerservice.domain.EmployerQuotaModel;
 import com.americatech.wfemployerservice.entity.EmployerEntity;
 import com.americatech.wfemployerservice.entity.EmployerQuotaEntity;
+import com.americatech.wfemployerservice.mapper.EmployerQuotaEntityMapper;
 import com.americatech.wfemployerservice.repository.EmployerQuotaRepository;
 import com.americatech.wfemployerservice.repository.EmployerRepository;
 import com.americatech.wfemployerservice.service.EmployerQuotaCommandService;
-import com.americatech.wfemployerservice.service.EmployerQuotaQueryService;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Objects;
 import java.util.UUID;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class EmployerQuotaCommandServiceImpl implements EmployerQuotaCommandService {
 
     private final EmployerQuotaRepository quotaRepository;
     private final EmployerRepository employerRepository;
-    private final EmployerQuotaQueryService quotaQueryService;
+    private final EmployerQuotaEntityMapper entityMapper;
 
-    public EmployerQuotaCommandServiceImpl(EmployerQuotaRepository quotaRepository,
-                                           EmployerRepository employerRepository,
-                                           EmployerQuotaQueryService quotaQueryService) {
-        this.quotaRepository = quotaRepository;
-        this.employerRepository = employerRepository;
-        this.quotaQueryService = quotaQueryService;
+    @Override
+    public EmployerQuotaModel create(EmployerQuotaModel quota) {
+        EmployerQuotaEntity entity = entityMapper.domainModelToEntity(quota);
+        attachEmployer(entity);
+        applyDerivedAndValidate(entity);
+        EmployerQuotaEntity saved = quotaRepository.save(entity);
+        return entityMapper.entityToDomainModel(saved);
     }
 
     @Override
-    public EmployerQuotaEntity create(EmployerQuotaEntity quota) {
-        quota.setId(null);
-        attachEmployer(quota);
-        applyDerivedAndValidate(quota);
-        return quotaRepository.save(quota);
-    }
+    public EmployerQuotaModel update(UUID id, EmployerQuotaModel input) {
+        EmployerQuotaEntity existing = quotaRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("EmployerModel quota not found: " + id));
 
-    @Override
-    public EmployerQuotaEntity update(UUID id, EmployerQuotaEntity quota) {
-        EmployerQuotaEntity existing = quotaQueryService.getById(id);
-        // update fields
-        if (quota.getEmployer() != null && quota.getEmployer().getId() != null) {
-            EmployerEntity employer = findEmployer(quota.getEmployer().getId());
+        if (input.getEmployerId() != null) {
+            EmployerEntity employer = findEmployer(input.getEmployerId());
             existing.setEmployer(employer);
         }
-        existing.setJobCategory(quota.getJobCategory());
-        existing.setTotalQuota(quota.getTotalQuota());
-        existing.setUsedQuota(quota.getUsedQuota());
-        existing.setValidFrom(quota.getValidFrom());
-        existing.setValidUntil(quota.getValidUntil());
-        existing.setMohreReference(quota.getMohreReference());
+        existing.setJobCategory(input.getJobCategory());
+        existing.setTotalQuota(input.getTotalQuota());
+        existing.setUsedQuota(input.getUsedQuota());
+        existing.setValidFrom(input.getValidFrom());
+        existing.setValidUntil(input.getValidUntil());
+        existing.setMohreReference(input.getMohreReference());
 
         applyDerivedAndValidate(existing);
-        return quotaRepository.save(existing);
+        EmployerQuotaEntity saved = quotaRepository.save(existing);
+        return entityMapper.entityToDomainModel(saved);
     }
 
     @Override
@@ -78,13 +75,11 @@ public class EmployerQuotaCommandServiceImpl implements EmployerQuotaCommandServ
     }
 
     private void applyDerivedAndValidate(EmployerQuotaEntity quota) {
-        // defaults if null to satisfy not-null columns and checks
         if (quota.getUsedQuota() == null) quota.setUsedQuota(0);
         if (quota.getTotalQuota() == null) {
             throw new IllegalArgumentException("totalQuota is required");
         }
 
-        // business validations mirroring DB constraints
         if (quota.getTotalQuota() <= 0) {
             throw new IllegalArgumentException("totalQuota must be > 0");
         }
@@ -98,7 +93,6 @@ public class EmployerQuotaCommandServiceImpl implements EmployerQuotaCommandServ
             throw new IllegalArgumentException("validUntil must be after validFrom");
         }
 
-        // derive available = total - used
         int available = quota.getTotalQuota() - quota.getUsedQuota();
         quota.setAvailableQuota(available);
     }

@@ -8,27 +8,7 @@ import org.mapstruct.*;
 import java.util.List;
 import java.util.UUID;
 
-@Mapper(componentModel = "spring")
+@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
 public interface JobRequirementEntityMapper extends DomainEntityMapper<JobRequirementModel, JobRequirementEntity> {
 
-    @Override
-    @Mapping(target = "jobOrderId", source = "jobOrder.id")
-    JobRequirementModel entityToDomainModel(JobRequirementEntity entity);
-
-    @Override
-    @Mapping(target = "jobOrder", source = "jobOrderId")
-    JobRequirementEntity domainModelToEntity(JobRequirementModel domainModel);
-
-    @Override
-    List<JobRequirementModel> entityToDomainModel(List<JobRequirementEntity> entity);
-
-    @Override
-    List<JobRequirementEntity> domainModelToEntity(List<JobRequirementModel> model);
-
-    default JobOrderEntity map(UUID jobOrderId) {
-        if (jobOrderId == null) return null;
-        JobOrderEntity e = new JobOrderEntity();
-        e.setId(jobOrderId);
-        return e;
-    }
 }

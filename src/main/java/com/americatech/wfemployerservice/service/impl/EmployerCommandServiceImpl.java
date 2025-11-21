@@ -6,6 +6,7 @@ import com.americatech.wfemployerservice.mapper.EmployerEntityMapper;
 import com.americatech.wfemployerservice.repository.EmployerRepository;
 import com.americatech.wfemployerservice.service.EmployerCommandService;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,21 +14,15 @@ import java.util.UUID;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class EmployerCommandServiceImpl implements EmployerCommandService {
 
     private final EmployerRepository employerRepository;
     private final EmployerEntityMapper employerEntityMapper;
 
-    public EmployerCommandServiceImpl(EmployerRepository employerRepository,
-                                      EmployerEntityMapper employerEntityMapper) {
-        this.employerRepository = employerRepository;
-        this.employerEntityMapper = employerEntityMapper;
-    }
-
     @Override
     public EmployerModel create(EmployerModel employer) {
         EmployerEntity entity = employerEntityMapper.domainModelToEntity(employer);
-        entity.setId(null); // ensure new entity
         EmployerEntity saved = employerRepository.save(entity);
         return employerEntityMapper.entityToDomainModel(saved);
     }

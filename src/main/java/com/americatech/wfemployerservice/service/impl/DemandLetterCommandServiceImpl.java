@@ -1,14 +1,16 @@
 package com.americatech.wfemployerservice.service.impl;
 
+import com.americatech.wfemployerservice.domain.DemandLetterModel;
 import com.americatech.wfemployerservice.entity.DemandLetterEntity;
 import com.americatech.wfemployerservice.entity.EmployerEntity;
 import com.americatech.wfemployerservice.entity.EmployerQuotaEntity;
+import com.americatech.wfemployerservice.mapper.DemandLetterEntityMapper;
 import com.americatech.wfemployerservice.repository.DemandLetterRepository;
 import com.americatech.wfemployerservice.repository.EmployerQuotaRepository;
 import com.americatech.wfemployerservice.repository.EmployerRepository;
 import com.americatech.wfemployerservice.service.DemandLetterCommandService;
-import com.americatech.wfemployerservice.service.DemandLetterQueryService;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +20,7 @@ import java.util.UUID;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class DemandLetterCommandServiceImpl implements DemandLetterCommandService {
 
     private static final Set<String> ALLOWED_STATUS = Set.of(
@@ -27,38 +30,31 @@ public class DemandLetterCommandServiceImpl implements DemandLetterCommandServic
     private final DemandLetterRepository demandLetterRepository;
     private final EmployerRepository employerRepository;
     private final EmployerQuotaRepository employerQuotaRepository;
-    private final DemandLetterQueryService demandLetterQueryService;
+    private final DemandLetterEntityMapper entityMapper;
 
-    public DemandLetterCommandServiceImpl(DemandLetterRepository demandLetterRepository,
-                                          EmployerRepository employerRepository,
-                                          EmployerQuotaRepository employerQuotaRepository,
-                                          DemandLetterQueryService demandLetterQueryService) {
-        this.demandLetterRepository = demandLetterRepository;
-        this.employerRepository = employerRepository;
-        this.employerQuotaRepository = employerQuotaRepository;
-        this.demandLetterQueryService = demandLetterQueryService;
+    @Override
+    public DemandLetterModel create(DemandLetterModel letter) {
+        DemandLetterEntity entity = entityMapper.domainModelToEntity(letter);
+        entity.setId(null);
+        attachRelations(entity);
+        applyDefaults(entity);
+        validate(entity);
+        DemandLetterEntity saved = demandLetterRepository.save(entity);
+        return entityMapper.entityToDomainModel(saved);
     }
 
     @Override
-    public DemandLetterEntity create(DemandLetterEntity letter) {
-        letter.setId(null);
-        attachRelations(letter);
-        applyDefaults(letter);
-        validate(letter);
-        return demandLetterRepository.save(letter);
-    }
-
-    @Override
-    public DemandLetterEntity update(UUID id, DemandLetterEntity input) {
-        DemandLetterEntity existing = demandLetterQueryService.getById(id);
+    public DemandLetterModel update(UUID id, DemandLetterModel input) {
+        DemandLetterEntity existing = demandLetterRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Demand letter not found: " + id));
 
         // allow updating associations if provided
-        if (input.getEmployer() != null && input.getEmployer().getId() != null) {
-            EmployerEntity employer = findEmployer(input.getEmployer().getId());
+        if (input.getEmployerId() != null) {
+            EmployerEntity employer = findEmployer(input.getEmployerId());
             existing.setEmployer(employer);
         }
-        if (input.getEmployerQuota() != null && input.getEmployerQuota().getId() != null) {
-            EmployerQuotaEntity quota = findEmployerQuota(input.getEmployerQuota().getId());
+        if (input.getEmployerQuotaId() != null) {
+            EmployerQuotaEntity quota = findEmployerQuota(input.getEmployerQuotaId());
             existing.setEmployerQuota(quota);
         }
 
@@ -77,7 +73,8 @@ public class DemandLetterCommandServiceImpl implements DemandLetterCommandServic
 
         applyDefaults(existing);
         validate(existing);
-        return demandLetterRepository.save(existing);
+        DemandLetterEntity saved = demandLetterRepository.save(existing);
+        return entityMapper.entityToDomainModel(saved);
     }
 
     @Override

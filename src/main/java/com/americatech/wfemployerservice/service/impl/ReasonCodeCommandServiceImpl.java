@@ -5,6 +5,7 @@ import com.americatech.wfemployerservice.repository.ReasonCodeRepository;
 import com.americatech.wfemployerservice.service.ReasonCodeCommandService;
 import com.americatech.wfemployerservice.service.ReasonCodeQueryService;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,6 +14,7 @@ import java.util.UUID;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class ReasonCodeCommandServiceImpl implements ReasonCodeCommandService {
 
     private static final Set<String> ALLOWED_APPLICABLE_TO = Set.of("employer", "workforce_uae");
@@ -22,15 +24,9 @@ public class ReasonCodeCommandServiceImpl implements ReasonCodeCommandService {
     private final ReasonCodeRepository repository;
     private final ReasonCodeQueryService queryService;
 
-    public ReasonCodeCommandServiceImpl(ReasonCodeRepository repository,
-                                        ReasonCodeQueryService queryService) {
-        this.repository = repository;
-        this.queryService = queryService;
-    }
 
     @Override
     public ReasonCodeEntity create(ReasonCodeEntity rc) {
-        rc.setId(null);
         applyDefaults(rc);
         validate(rc);
         ensureUniqueCode(rc.getCode(), null);

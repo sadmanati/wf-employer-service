@@ -4,6 +4,7 @@ import com.americatech.wfemployerservice.entity.ReasonCodeEntity;
 import com.americatech.wfemployerservice.repository.ReasonCodeRepository;
 import com.americatech.wfemployerservice.service.ReasonCodeQueryService;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,13 +13,11 @@ import java.util.UUID;
 
 @Service
 @Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class ReasonCodeQueryServiceImpl implements ReasonCodeQueryService {
 
     private final ReasonCodeRepository repository;
 
-    public ReasonCodeQueryServiceImpl(ReasonCodeRepository repository) {
-        this.repository = repository;
-    }
 
     @Override
     public ReasonCodeEntity getById(UUID id) {
