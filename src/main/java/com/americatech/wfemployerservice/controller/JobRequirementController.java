@@ -1,6 +1,10 @@
 package com.americatech.wfemployerservice.controller;
 
-import com.americatech.wfemployerservice.entity.JobRequirementEntity;
+import com.americatech.wfemployerservice.domain.JobRequirementModel;
+import com.americatech.wfemployerservice.mapper.JobRequirementRequestMapper;
+import com.americatech.wfemployerservice.mapper.JobRequirementResponseMapper;
+import com.americatech.wfemployerservice.request.JobRequirementRequest;
+import com.americatech.wfemployerservice.response.JobRequirementResponse;
 import com.americatech.wfemployerservice.service.JobRequirementCommandService;
 import com.americatech.wfemployerservice.service.JobRequirementQueryService;
 import jakarta.persistence.EntityNotFoundException;
@@ -18,32 +22,43 @@ public class JobRequirementController {
 
     private final JobRequirementQueryService queryService;
     private final JobRequirementCommandService commandService;
+    private final JobRequirementRequestMapper requestMapper;
+    private final JobRequirementResponseMapper responseMapper;
 
     public JobRequirementController(JobRequirementQueryService queryService,
-                                    JobRequirementCommandService commandService) {
+                                    JobRequirementCommandService commandService,
+                                    JobRequirementRequestMapper requestMapper,
+                                    JobRequirementResponseMapper responseMapper) {
         this.queryService = queryService;
         this.commandService = commandService;
+        this.requestMapper = requestMapper;
+        this.responseMapper = responseMapper;
     }
 
     @PostMapping
-    public ResponseEntity<JobRequirementEntity> create(@Valid @RequestBody JobRequirementEntity requirement) {
-        JobRequirementEntity created = commandService.create(requirement);
-        return ResponseEntity.status(HttpStatus.CREATED).body(created);
+    public ResponseEntity<JobRequirementResponse> create(@Valid @RequestBody JobRequirementRequest requirement) {
+        JobRequirementModel model = requestMapper.requestModelToDomainModel(requirement);
+        JobRequirementModel created = commandService.create(model);
+        JobRequirementResponse response = responseMapper.domainModelToResponseModel(created);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping("/{id}")
-    public JobRequirementEntity getById(@PathVariable UUID id) {
-        return queryService.getById(id);
+    public JobRequirementResponse getById(@PathVariable UUID id) {
+        JobRequirementModel model = queryService.getById(id);
+        return responseMapper.domainModelToResponseModel(model);
     }
 
     @GetMapping
-    public List<JobRequirementEntity> getAll() {
-        return queryService.getAll();
+    public List<JobRequirementResponse> getAll() {
+        return responseMapper.domainModelToResponseModel(queryService.getAll());
     }
 
     @PutMapping("/{id}")
-    public JobRequirementEntity update(@PathVariable UUID id, @Valid @RequestBody JobRequirementEntity requirement) {
-        return commandService.update(id, requirement);
+    public JobRequirementResponse update(@PathVariable UUID id, @Valid @RequestBody JobRequirementRequest requirement) {
+        JobRequirementModel model = requestMapper.requestModelToDomainModel(requirement);
+        JobRequirementModel updated = commandService.update(id, model);
+        return responseMapper.domainModelToResponseModel(updated);
     }
 
     @DeleteMapping("/{id}")

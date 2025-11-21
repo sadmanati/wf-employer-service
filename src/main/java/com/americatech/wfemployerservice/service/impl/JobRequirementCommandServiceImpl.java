@@ -1,11 +1,12 @@
 package com.americatech.wfemployerservice.service.impl;
 
+import com.americatech.wfemployerservice.domain.JobRequirementModel;
 import com.americatech.wfemployerservice.entity.JobOrderEntity;
 import com.americatech.wfemployerservice.entity.JobRequirementEntity;
+import com.americatech.wfemployerservice.mapper.JobRequirementEntityMapper;
 import com.americatech.wfemployerservice.repository.JobOrderRepository;
 import com.americatech.wfemployerservice.repository.JobRequirementRepository;
 import com.americatech.wfemployerservice.service.JobRequirementCommandService;
-import com.americatech.wfemployerservice.service.JobRequirementQueryService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,31 +26,34 @@ public class JobRequirementCommandServiceImpl implements JobRequirementCommandSe
 
     private final JobRequirementRepository repository;
     private final JobOrderRepository jobOrderRepository;
-    private final JobRequirementQueryService queryService;
+    private final JobRequirementEntityMapper entityMapper;
 
     public JobRequirementCommandServiceImpl(JobRequirementRepository repository,
                                             JobOrderRepository jobOrderRepository,
-                                            JobRequirementQueryService queryService) {
+                                            JobRequirementEntityMapper entityMapper) {
         this.repository = repository;
         this.jobOrderRepository = jobOrderRepository;
-        this.queryService = queryService;
+        this.entityMapper = entityMapper;
     }
 
     @Override
-    public JobRequirementEntity create(JobRequirementEntity requirement) {
-        requirement.setId(null);
-        attachJobOrder(requirement);
-        applyDefaults(requirement);
-        validate(requirement);
-        return repository.save(requirement);
+    public JobRequirementModel create(JobRequirementModel requirement) {
+        JobRequirementEntity entity = entityMapper.domainModelToEntity(requirement);
+        entity.setId(null);
+        attachJobOrder(entity);
+        applyDefaults(entity);
+        validate(entity);
+        JobRequirementEntity saved = repository.save(entity);
+        return entityMapper.entityToDomainModel(saved);
     }
 
     @Override
-    public JobRequirementEntity update(UUID id, JobRequirementEntity input) {
-        JobRequirementEntity existing = queryService.getById(id);
+    public JobRequirementModel update(UUID id, JobRequirementModel input) {
+        JobRequirementEntity existing = repository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Job requirement not found: " + id));
 
-        if (input.getJobOrder() != null && input.getJobOrder().getId() != null) {
-            existing.setJobOrder(findJobOrder(input.getJobOrder().getId()));
+        if (input.getJobOrderId() != null) {
+            existing.setJobOrder(findJobOrder(input.getJobOrderId()));
         }
         existing.setRequirementType(input.getRequirementType());
         existing.setCategory(input.getCategory());
@@ -61,7 +65,8 @@ public class JobRequirementCommandServiceImpl implements JobRequirementCommandSe
 
         applyDefaults(existing);
         validate(existing);
-        return repository.save(existing);
+        JobRequirementEntity saved = repository.save(existing);
+        return entityMapper.entityToDomainModel(saved);
     }
 
     @Override
