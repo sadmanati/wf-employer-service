@@ -5,6 +5,7 @@ import com.americatech.wfemployerservice.service.ReasonCodeCommandService;
 import com.americatech.wfemployerservice.service.ReasonCodeQueryService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,16 +15,12 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/reason-codes")
+@RequiredArgsConstructor
 public class ReasonCodeController {
 
     private final ReasonCodeQueryService queryService;
     private final ReasonCodeCommandService commandService;
 
-    public ReasonCodeController(ReasonCodeQueryService queryService,
-                                ReasonCodeCommandService commandService) {
-        this.queryService = queryService;
-        this.commandService = commandService;
-    }
 
     @PostMapping
     public ResponseEntity<ReasonCodeEntity> create(@Valid @RequestBody ReasonCodeEntity rc) {

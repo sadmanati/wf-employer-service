@@ -9,6 +9,7 @@ import com.americatech.wfemployerservice.service.JobRequirementCommandService;
 import com.americatech.wfemployerservice.service.JobRequirementQueryService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +19,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/job-requirements")
+@RequiredArgsConstructor
 public class JobRequirementController {
 
     private final JobRequirementQueryService queryService;
@@ -25,15 +27,6 @@ public class JobRequirementController {
     private final JobRequirementRequestMapper requestMapper;
     private final JobRequirementResponseMapper responseMapper;
 
-    public JobRequirementController(JobRequirementQueryService queryService,
-                                    JobRequirementCommandService commandService,
-                                    JobRequirementRequestMapper requestMapper,
-                                    JobRequirementResponseMapper responseMapper) {
-        this.queryService = queryService;
-        this.commandService = commandService;
-        this.requestMapper = requestMapper;
-        this.responseMapper = responseMapper;
-    }
 
     @PostMapping
     public ResponseEntity<JobRequirementResponse> create(@Valid @RequestBody JobRequirementRequest requirement) {

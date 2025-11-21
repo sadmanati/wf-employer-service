@@ -1,10 +1,12 @@
 package com.americatech.wfemployerservice.controller;
 
 import com.americatech.wfemployerservice.entity.JobOrderEntity;
+import com.americatech.wfemployerservice.mapper.JobOrderRequestMapper;
+import com.americatech.wfemployerservice.mapper.JobOrderResponseMapper;
 import com.americatech.wfemployerservice.service.JobOrderCommandService;
 import com.americatech.wfemployerservice.service.JobOrderQueryService;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,16 +16,14 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/job-orders")
+@RequiredArgsConstructor
 public class JobOrderController {
 
     private final JobOrderQueryService queryService;
     private final JobOrderCommandService commandService;
+    private final JobOrderRequestMapper requestMapper;
+    private final JobOrderResponseMapper responseMapper;
 
-    public JobOrderController(JobOrderQueryService queryService,
-                              JobOrderCommandService commandService) {
-        this.queryService = queryService;
-        this.commandService = commandService;
-    }
 
     @PostMapping
     public ResponseEntity<JobOrderEntity> create(@Valid @RequestBody JobOrderEntity order) {
@@ -47,14 +47,7 @@ public class JobOrderController {
     }
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable UUID id) {
         commandService.delete(id);
-    }
-
-    @ExceptionHandler({EntityNotFoundException.class, IllegalArgumentException.class})
-    public ResponseEntity<String> handleErrors(RuntimeException ex) {
-        HttpStatus status = ex instanceof EntityNotFoundException ? HttpStatus.NOT_FOUND : HttpStatus.BAD_REQUEST;
-        return ResponseEntity.status(status).body(ex.getMessage());
     }
 }
