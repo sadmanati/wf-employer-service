@@ -1,11 +1,12 @@
 package com.americatech.wfemployerservice.controller;
 
-import com.americatech.wfemployerservice.entity.JobOrderHistoryEntity;
+import com.americatech.wfemployerservice.domain.JobOrderHistoryModel;
 import com.americatech.wfemployerservice.mapper.JobOrderHistoryRequestMapper;
 import com.americatech.wfemployerservice.mapper.JobOrderHistoryResponseMapper;
+import com.americatech.wfemployerservice.request.JobOrderHistoryRequest;
+import com.americatech.wfemployerservice.response.JobOrderHistoryResponse;
 import com.americatech.wfemployerservice.service.JobOrderHistoryCommandService;
 import com.americatech.wfemployerservice.service.JobOrderHistoryQueryService;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/job-order-history")
@@ -27,35 +29,41 @@ public class JobOrderHistoryController {
 
 
     @PostMapping
-    public ResponseEntity<JobOrderHistoryEntity> create(@Valid @RequestBody JobOrderHistoryEntity history) {
-        JobOrderHistoryEntity created = commandService.create(history);
-        return ResponseEntity.status(HttpStatus.CREATED).body(created);
+    public ResponseEntity<JobOrderHistoryResponse> create(@Valid @RequestBody JobOrderHistoryRequest request) {
+        JobOrderHistoryModel model = requestMapper.requestModelToDomainModel(request);
+        model = commandService.create(model);
+        JobOrderHistoryResponse response = responseMapper.domainModelToResponseModel(model);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping("/{id}")
-    public JobOrderHistoryEntity getById(@PathVariable UUID id) {
-        return queryService.getById(id);
+    public ResponseEntity<JobOrderHistoryResponse> getById(@PathVariable UUID id) {
+        JobOrderHistoryModel model = queryService.getById(id);
+        JobOrderHistoryResponse response = responseMapper.domainModelToResponseModel(model);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping
-    public List<JobOrderHistoryEntity> getAll() {
-        return queryService.getAll();
+    public ResponseEntity<List<JobOrderHistoryResponse>> getAll() {
+        List<JobOrderHistoryModel> domains = queryService.getAll();
+        List<JobOrderHistoryResponse> responses = domains.stream()
+                .map(responseMapper::domainModelToResponseModel)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(responses);
     }
 
     @PutMapping("/{id}")
-    public JobOrderHistoryEntity update(@PathVariable UUID id, @Valid @RequestBody JobOrderHistoryEntity history) {
-        return commandService.update(id, history);
+    public ResponseEntity<JobOrderHistoryResponse> update(@PathVariable UUID id,
+                                                          @Valid @RequestBody JobOrderHistoryRequest request) {
+        JobOrderHistoryModel model = requestMapper.requestModelToDomainModel(request);
+         model = commandService.update(id, model);
+        JobOrderHistoryResponse response = responseMapper.domainModelToResponseModel(model);
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable UUID id) {
+    public ResponseEntity<Void> delete(@PathVariable UUID id) {
         commandService.delete(id);
-    }
-
-    @ExceptionHandler({EntityNotFoundException.class, IllegalArgumentException.class})
-    public ResponseEntity<String> handleErrors(RuntimeException ex) {
-        HttpStatus status = ex instanceof EntityNotFoundException ? HttpStatus.NOT_FOUND : HttpStatus.BAD_REQUEST;
-        return ResponseEntity.status(status).body(ex.getMessage());
+        return ResponseEntity.noContent().build();
     }
 }

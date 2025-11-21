@@ -1,6 +1,8 @@
 package com.americatech.wfemployerservice.service.impl;
 
+import com.americatech.wfemployerservice.domain.JobOrderHistoryModel;
 import com.americatech.wfemployerservice.entity.JobOrderHistoryEntity;
+import com.americatech.wfemployerservice.mapper.JobOrderHistoryEntityMapper;
 import com.americatech.wfemployerservice.repository.JobOrderHistoryRepository;
 import com.americatech.wfemployerservice.service.JobOrderHistoryQueryService;
 import jakarta.persistence.EntityNotFoundException;
@@ -17,15 +19,18 @@ import java.util.UUID;
 public class JobOrderHistoryQueryServiceImpl implements JobOrderHistoryQueryService {
 
     private final JobOrderHistoryRepository repository;
+    private final JobOrderHistoryEntityMapper entityMapper;
 
     @Override
-    public JobOrderHistoryEntity getById(UUID id) {
-        return repository.findById(id)
+    public JobOrderHistoryModel getById(UUID id) {
+        JobOrderHistoryEntity entity = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Job order history not found: " + id));
+        return entityMapper.entityToDomainModel(entity);
     }
 
     @Override
-    public List<JobOrderHistoryEntity> getAll() {
-        return repository.findAll();
+    public List<JobOrderHistoryModel> getAll() {
+        List<JobOrderHistoryEntity> entities = repository.findAll();
+        return entityMapper.entityToDomainModel(entities);
     }
 }
