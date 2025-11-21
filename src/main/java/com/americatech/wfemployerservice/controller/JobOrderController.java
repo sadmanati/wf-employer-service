@@ -1,8 +1,10 @@
 package com.americatech.wfemployerservice.controller;
 
-import com.americatech.wfemployerservice.entity.JobOrderEntity;
+import com.americatech.wfemployerservice.domain.JobOrderModel;
 import com.americatech.wfemployerservice.mapper.JobOrderRequestMapper;
 import com.americatech.wfemployerservice.mapper.JobOrderResponseMapper;
+import com.americatech.wfemployerservice.request.JobOrderRequest;
+import com.americatech.wfemployerservice.response.JobOrderResponse;
 import com.americatech.wfemployerservice.service.JobOrderCommandService;
 import com.americatech.wfemployerservice.service.JobOrderQueryService;
 import jakarta.validation.Valid;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/job-orders")
@@ -26,28 +29,41 @@ public class JobOrderController {
 
 
     @PostMapping
-    public ResponseEntity<JobOrderEntity> create(@Valid @RequestBody JobOrderEntity order) {
-        JobOrderEntity created = commandService.create(order);
-        return ResponseEntity.status(HttpStatus.CREATED).body(created);
+    public ResponseEntity<JobOrderResponse> create(@Valid @RequestBody JobOrderRequest request) {
+        JobOrderModel model = requestMapper.requestModelToDomainModel(request);
+        model = commandService.create(model);
+        JobOrderResponse response = responseMapper.domainModelToResponseModel(model);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping("/{id}")
-    public JobOrderEntity getById(@PathVariable UUID id) {
-        return queryService.getById(id);
+    public ResponseEntity<JobOrderResponse> getById(@PathVariable UUID id) {
+        JobOrderModel model = queryService.getById(id);
+        JobOrderResponse response = responseMapper.domainModelToResponseModel(model);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping
-    public List<JobOrderEntity> getAll() {
-        return queryService.getAll();
+    public ResponseEntity<List<JobOrderResponse>> getAll() {
+        List<JobOrderModel> domains = queryService.getAll();
+        List<JobOrderResponse> responses = domains.stream()
+                .map(responseMapper::domainModelToResponseModel)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(responses);
     }
 
     @PutMapping("/{id}")
-    public JobOrderEntity update(@PathVariable UUID id, @Valid @RequestBody JobOrderEntity order) {
-        return commandService.update(id, order);
+    public ResponseEntity<JobOrderResponse> update(@PathVariable UUID id,
+                                                   @Valid @RequestBody JobOrderRequest request) {
+        JobOrderModel model = requestMapper.requestModelToDomainModel(request);
+        model = commandService.update(id, model);
+        JobOrderResponse response = responseMapper.domainModelToResponseModel(model);
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable UUID id) {
+    public ResponseEntity<Void> delete(@PathVariable UUID id) {
         commandService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }
