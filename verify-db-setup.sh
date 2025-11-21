@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # ═══════════════════════════════════════════════════════════════════════════
-# WF Employer Service - Database Migration Verification Script
+# WF EmployerModel Service - Database Migration Verification Script
 # ═══════════════════════════════════════════════════════════════════════════
 
 set -e

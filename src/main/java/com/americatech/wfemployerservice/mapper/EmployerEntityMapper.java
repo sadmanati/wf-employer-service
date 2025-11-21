@@ -1,0 +1,23 @@
+package com.americatech.wfemployerservice.mapper;
+
+import com.americatech.wfemployerservice.domain.EmployerModel;
+import com.americatech.wfemployerservice.entity.EmployerEntity;
+import org.mapstruct.Mapper;
+
+import java.util.List;
+
+@Mapper(componentModel = "spring")
+public interface EmployerEntityMapper extends DomainEntityMapper<EmployerModel, EmployerEntity> {
+
+    @Override
+    EmployerModel entityToDomainModel(EmployerEntity entity);
+
+    @Override
+    EmployerEntity domainModelToEntity(EmployerModel domainModel);
+
+    @Override
+    List<EmployerModel> entityToDomainModel(List<EmployerEntity> entity);
+
+    @Override
+    List<EmployerEntity> domainModelToEntity(List<EmployerModel> model);
+}

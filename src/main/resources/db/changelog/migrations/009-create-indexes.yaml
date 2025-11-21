@@ -33,7 +33,7 @@ databaseChangeLog:
                   name: created_at
                   descending: true
 
-        # Employer quotas indexes
+        # EmployerModel quotas indexes
         - createIndex:
             tableName: employer_quotas
             indexName: idx_employer_quotas_employer_id
